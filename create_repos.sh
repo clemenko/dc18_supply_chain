@@ -1,7 +1,7 @@
 #!/bin/bash
 # requires environment variables: DTR_HOST, DTR_USERNAME and DTR_TOKEN
 
-curl -X POST -k -sL \
+curl -X POST -k -L \
   -u $DTR_USERNAME:$DTR_TOKEN \
   $DTR_URL/api/v0/repositories/dockersamples \
   -H 'Content-Type: application/json' \
@@ -15,7 +15,7 @@ curl -X POST -k -sL \
   "visibility": "public"
 }'
 
-curl -X POST -k -sL \
+curl -X POST -k -L \
   -u $DTR_USERNAME:$DTR_TOKEN \
   $DTR_URL/api/v0/repositories/dockersamples \
   -H 'Content-Type: application/json' \
