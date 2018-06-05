@@ -240,11 +240,7 @@ curl -X POST -k -L \
 6. We should have two repositories now.
     ![](img/repo_list.jpg)
 
-### <a name="task4.1"></a>Task 4.1: Create Promotion Policy
-
-### <a name="task4.2"></a>Task 4.2: Create Promotion Policy
-
-### <a name="task4.3"></a>Task 4.3: Create Promotion Policy
+### <a name="task4.1"></a>Task 4.1: Create Promotion Policy - Private to Public
 With the two repositories setup we can now define the promotion policy. We need to create a target policy that has a `CRITERIA` of `Critical Vulnerabilities` equal to zero. The policy will target the `admin`/`alpine` repository.
 
 1. Navigate to the `admin`/`alpine_build` repository. Click `Promotions` and click `New promotion policy`.
@@ -253,6 +249,8 @@ With the two repositories setup we can now define the promotion policy. We need 
   ![](img/promo_policy.jpg)
 
  Perfect. Now let's push am image that will be scanned and promoted.
+ 
+### <a name="task4.2"></a>Task 4.2: Create Promotion Policy - Private to Hub.docker.com 
 
 ## <a name="task5"></a>Task 5: Pull / Push Docker Image
 In order to push and pull images to DTR we will need to take advantage of PWD's Console Access.
@@ -381,6 +379,7 @@ The following examples shows the basic usage of Notary. To use image signing, cr
 
   ![](img/dtr_signed.jpg)
 
+## <a name="task8"></a>Task 8: Automate with Jenkins
 
 ## <a name="Conclusion"></a>Conclusion
 In this lab we been able to leverage the power of Docker Enterprise Edition for creating and using secrets. We also were able to create the foundation of a secure supply chain with Docker Image Scanning and Docker Content Trust.
