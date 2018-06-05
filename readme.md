@@ -14,8 +14,10 @@ In this lab you will integrate Docker Enterpise Edition Advanced in to your deve
 > * [Task 1: Accessing PWD](#task1)
 >   * [Task 1.1: Set Up Environment Variables](#task1.1)
 > * [Task 2: Enable Docker Image Scanning](#task2)
-> * [Task 3: Create Jenkins User](#task3)
->   * [Task 3.1: Create Jenkins DTR Token](#task3.1)
+> * [Task 3: Create Jenkins User and Organization](#task3)
+>   * [Task 3.1: Create Jenkins Organization](#task3.1)
+>   * [Task 3.2: Create Jenkins User](#task3.2)
+>   * [Task 3.3: Create Jenkins DTR Token](#task3.3)
 > * [Task 4: Create DTR Repository](#task4)
 >   * [Task 4.1: Create Promotion Policy (Private to Public)](#task4.1)
 >   * [Task 4.2: Create Promotion Policy (Private to Hub.docker.com)](#task4.2)
@@ -99,76 +101,13 @@ git clone https://github.com/clemenko/dc18_supply_chain.git
 Once cloned, now we can run the `var_setup.sh` script. 
 
 ```
-cd dc18_supply_chain
-. ./var_setup.sh
+. dc18_supply_chain/var_setup.sh
 ```
 	
-## <a name="task2"></a>Task 2: Create Secrets
+Now your PWD environment variables are setup. We will use the variables for some scripting. 
 
 
-
-## <a name="task3"></a>Task 3: Deploy Docker Stack
-Background: A Stack is a collection of services described in a single yaml. And deployed as a single unit. This can be very helpful when deploying large sets of services.
-
-We are going to use a `Stack` to deploy a `Service` that will use the newly created secrets.
-
-1. Navigate to `Shared Resources` --> `Stacks` on the left hand menu. And then click `Create Stack`.
-2. Name can be anything unique. let's use `summit`. The Mode should be `Swarm Services`. And paste in the following:
-
-  ```yaml
-  version: "3.3"
-  services:
-      app:
-        image: clemenko/fedsummit_2018
-        deploy:
-          replicas: 2
-          mode: replicated
-          placement:
-            constraints:
-              - 'node.role == worker'
-        ports:
-          - 5000:5000
-        secrets:
-          - source: title_v1
-            target: secret
-
-  secrets:
-      title_v1:
-        external: true
-  ```
-   ![](img/stack_deploy.jpg)
-
-3. Once the deploy is complete click `Done`. No we can verify it is deployed by navigating to `Shared Resources` --> `Services` and look for the `summit_app` service.
-
-  ![](img/service_list.jpg)
-
-4. Let's check the resulting webpage. Click on the service itself --> `summit_app`. You will notice a Right hand menu appear. Here you will find a `Published Endpoints` section. Click on the endpoint.
-  ![](img/endpoint.jpg)
-
-5. Once the page has loaded. Hit `Refresh` in the browser. Notice the `server` field change? There are actually two containers that are using the same secret.
-  ![](img/webpage.jpg)
-
-### <a name="task3.1"></a>Task 3.1: Update Service
-To show some of the flexibility of secrets we can update the service to use the new secret.
-
-1. Navigate back to UCP --> `Swarm` --> `Services` --> `summit_app`. This time instead of clicking on the endpoint. Let's click on `Configure` --> `Environment`.
-  ![](img/environment.jpg)
-
-2. Remove the old Secret by clicking the `X` on the right hand side.
-   ![](img/secret_delete.jpg)
-
-3. Add the new secret by clicking `Use Secret +`. The `Secret Name` is now `title_v2`. The `Target Name` should be `secret`. You an compare this to the stack we deployed earlier. Click `Confirm` to complete the addition.
- > **Note**: Notice the Name changed and the Target Name is the same.
-
- ![](img/secret_added.jpg)
-
-4. Click `Save` to complete the update.
-5. Now go back to the tab with the webpage and hit refresh. Keep refreshing and notice the change in the the `server` field and the secret. You effectively created a rolling update of the service without loosing availability to the app.
-
-## <a name="task4"></a>Task 4: Create DTR Repository
-We now need to access Docker Trusted Registry to setup two repositories.
-
-### <a name="task4.1"></a>Task 4.1: Enable Docker Image Scanning
+## <a name="task2"></a>Task 2: Enable Docker Image Scanning
 Before we create the repositories, let's start with enabling the Docker Image Scanning engine.
 
 1. From the main PWD screen click the `DTR` button on the left side of the screen
@@ -183,8 +122,67 @@ Before we create the repositories, let's start with enabling the Docker Image Sc
 3.  Select `Enable Scanning`. In the popup leave it in `Online` mode and select `Enable`. The CVE database will start downloading. This can take a few minutes. Please be patient for it to complete.
     ![](img/scanning_enable.jpg)
 
-### <a name="task4.2"></a>Task 4.2: Create Repositories
-We can now create the two repositories.
+**You will notice the yellow banner while DTR is downloading the CVE database.**
+
+## <a name="task3"></a>Task 3: Create Jenkins User and Organization
+In order to setup our automation we need to create an organization and a user account for Jenkins. We are going to create a user named `jenkins` in the organization `ci`. 
+
+### <a name="task3.1"></a>Task 3.1: Create Jenkins Organization
+1. From the `PWD` main page click on `DTR`. 
+
+![](img/orgs_1.jpg)
+
+2. Once in `DTR` navigate to `Organizations` on the left. 
+3. Now click `New organization`.
+4. Type in `ci` and click `Save`.
+
+![](img/new_org.jpg)
+
+Now we should see the organization named `ci`. 
+
+![](img/orgs_2.jpg)
+
+### <a name="task3.2"></a>Task 3.2: Create Jenkins User
+While remaining in DTR we can create the user from here. 
+
+1. Click on the organization `ci`.
+2. Click `Add user`. 
+3. Make sure you click the radio button `New`. Add a new user name `jenkins`. Set a simple password that you can remember. Maybe `admin1234`?
+ 
+![](img/new_user.jpg)
+
+Now change the permissions for the `jenkins` account to `Org Owner`.
+
+![](img/org_admin.jpg)
+
+### <a name="task3.3"></a>Task 3.3: Create Jenkins DTR Token
+Now that we have the `jenkins` user created we need to add a token for use with DTR's API. 
+
+Navigate to `Users` on the left pane. Click on `jenkins`, then click the `Access Tokens` tab. 
+
+![](img/token.jpg)
+
+Click `New access token`. Enter `api` into the description field and click `Create`.  
+
+**Write down the token that is displayed. You will need this again!**
+
+It should look like `ee9d7ff2-6fd4-4a41-9971-789e06e0d5d5`. Click `Done`. 
+
+Lets add it to the `worker3` environment. 
+
+```
+export DTR_TOKEN=ee9d7ff2-6fd4-4a41-9971-789e06e0d5d5
+```
+
+## <a name="task4"></a>Task 4: Create DTR Repository
+We now need to access Docker Trusted Registry to setup two repositories.
+
+We have an easy way with a script or the hard way by using the GUI. 
+
+**Easy Way:**
+
+
+**Hard Way:**
 
 1. Navigate to `Repositories` on the left menu and click `New repository`.
 2. Create that looks like `admin`/`alpine_build`. Make sure you click `Private`. Do not click `Create` yet!
@@ -195,6 +193,10 @@ We can now create the two repositories.
 
  5. We should have two repositories now.
     ![](img/repo_list.jpg)
+
+### <a name="task4.1"></a>Task 4.1: Create Promotion Policy
+
+### <a name="task4.2"></a>Task 4.2: Create Promotion Policy
 
 ### <a name="task4.3"></a>Task 4.3: Create Promotion Policy
 With the two repositories setup we can now define the promotion policy. We need to create a target policy that has a `CRITERIA` of `Critical Vulnerabilities` equal to zero. The policy will target the `admin`/`alpine` repository.

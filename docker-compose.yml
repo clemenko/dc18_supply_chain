@@ -1,19 +1,12 @@
-version: "3.3"
+version: "3.4"
 services:
   app:
-    image: clemenko/fedsummit_2018
+    image: clemenko/dc18:0.2
     deploy:
-      replicas: 2
+      replicas: 6
       mode: replicated
       placement:
         constraints:
           - 'node.role == worker'
     ports:
       - 5000:5000
-    secrets:
-      - source: title_v1
-        target: secret
-
-secrets:
-  title_v1:
-    external: true
