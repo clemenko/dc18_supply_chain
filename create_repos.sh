@@ -1,3 +1,4 @@
+#!/bin/bash
 # requires environment variables: DTR_HOST, DTR_USERNAME and DTR_TOKEN
 
 curl -X POST -k -sL \
