@@ -118,11 +118,13 @@ Before we create the repositories, let's start with enabling the Docker Image Sc
 	>
 	> ![](./img/ssl_error.png)
 
-2.  Navigate to `System` --> `Security`.
+2.  Navigate to `System`on the left pane, then `Security`.
+![](img/system_scanning.jpg)
+
 3.  Select `Enable Scanning`. In the popup leave it in `Online` mode and select `Enable`. The CVE database will start downloading. This can take a few minutes. Please be patient for it to complete.
     ![](img/scanning_enable.jpg)
 
-**You will notice the yellow banner while DTR is downloading the CVE database.**
+**You will notice the yellow banner while DTR is downloading the CVE database. It will take some time to download.**
 
 ## <a name="task3"></a>Task 3: Create Jenkins User and Organization
 In order to setup our automation we need to create an organization and a user account for Jenkins. We are going to create a user named `jenkins` in the organization `ci`. 

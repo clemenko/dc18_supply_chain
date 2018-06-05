@@ -3,7 +3,7 @@
 
 curl -X POST -k -L \
   -u $DTR_USERNAME:$DTR_TOKEN \
-  $DTR_URL/api/v0/repositories/ci \
+  https://$DTR_URL/api/v0/repositories/ci \
   -H 'Content-Type: application/json' \
   -d '{
   "enableManifestLists": true,
@@ -17,7 +17,7 @@ curl -X POST -k -L \
 
 curl -X POST -k -L \
   -u $DTR_USERNAME:$DTR_TOKEN \
-  $DTR_URL/api/v0/repositories/ci \
+  https://$DTR_URL/api/v0/repositories/ci \
   -H 'Content-Type: application/json' \
   -d '{
   "enableManifestLists": true,
