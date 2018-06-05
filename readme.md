@@ -181,19 +181,63 @@ We now need to access Docker Trusted Registry to setup two repositories.
 
 We have an easy way with a script or the hard way by using the GUI. 
 
+Either way we need to create two repositories, `dc18_build` and `dc18`. `dc18_build` will be used for the private version of the image. `dc18` will be the public version once an CVE scan is complete. 
+
 **Easy Way:**
 
+Since we `git cloned` the repo for this workshop we can use a script that will create the repo. 
+
+```
+./dc18_supply_chain/create_repos.sh
+```
+
+Feel free to `cat` the file to see how we are using `curl` and the API to create the repositories. 
+
+```
+cat ./dc18_supply_chain/create_repos.sh
+#!/bin/bash
+# requires environment variables: DTR_HOST, DTR_USERNAME and DTR_TOKEN
+
+curl -X POST -k -L \
+  -u $DTR_USERNAME:$DTR_TOKEN \
+  https://$DTR_URL/api/v0/repositories/ci \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "enableManifestLists": true,
+  "immutableTags": true,
+  "longDescription": "",
+  "name": "dc18",
+  "scanOnPush": true,
+  "shortDescription": "Dockercon 2018 Example - public",
+  "visibility": "public"
+}'
+
+curl -X POST -k -L \
+  -u $DTR_USERNAME:$DTR_TOKEN \
+  https://$DTR_URL/api/v0/repositories/ci \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "enableManifestLists": true,
+  "immutableTags": true,
+  "longDescription": "",
+  "name": "dc18_build",
+  "scanOnPush": true,
+  "shortDescription": "Dockercon 2018 Example - private",
+  "visibility": "public"
+}'
+```
 
 **Hard Way:**
 
 1. Navigate to `Repositories` on the left menu and click `New repository`.
-2. Create that looks like `admin`/`alpine_build`. Make sure you click `Private`. Do not click `Create` yet!
-3. Click `Show advanced settings` and then click `On Push` under `SCAN ON PUSH`.  This will ensure that the CVE scan will start right after every push to this repository.  Click `Create`.
-  ![](img/new_repo.jpg)
+2. Create that looks like `ci`/`dc18_build`. Make sure you click `Private`. Do not click `Create` yet!
+3. Click `Show advanced settings` and then click `On Push` under `SCAN ON PUSH`.  This will ensure that the CVE scan will start right after every push to this repository.  And turn on `IMMUTABILITY `. Then click `Create`.
+![](img/new_repo.jpg)
 
- 4. Now let's create the second repository in a similar fashion. Create a `Public` repository as `admin`/`alpine` with `SCAN ON PUSH` set to `On Push`.
+4. Now let's create the second repository in a similar fashion. Create a `Public` repository as `admin`/`alpine` with `SCAN ON PUSH` set to `On Push`.
 
- 5. We should have two repositories now.
+5. Repeat this for creating the `ci`/`dc18` `Public` repository with `SCAN ON PUSH` set to `On Push`.
+6. We should have two repositories now.
     ![](img/repo_list.jpg)
 
 ### <a name="task4.1"></a>Task 4.1: Create Promotion Policy
