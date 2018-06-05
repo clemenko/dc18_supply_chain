@@ -1,4 +1,4 @@
-# Securing Applications with Docker Enterpise Edition Advanced
+# Secure, Automated Software Supply Chain - Dockercon 2018
 
 In this lab you will integrate Docker Enterpise Edition Advanced in to your development pipeline. You will build your application from a Dockerfile and push your image to the Docker Trusted Registry (DTR). DTR will scan your image for vulnerabilities so they can be fixed before your application is deployed. This helps you build more secure apps!
 
@@ -12,19 +12,21 @@ In this lab you will integrate Docker Enterpise Edition Advanced in to your deve
 > * [Prerequisites](#prerequisites)
 > * [Introduction](#introduction)
 > * [Task 1: Accessing PWD](#task1)
-> * [Task 2: Create Secrets](#task2)
-> * [Task 3: Deploy Docker Stack](#task3)
->   * [Task 3.1: Update Service](#task3.1)
+>   * [Task 1.1: Set Up Environment Variables](#task1.1)
+> * [Task 2: Enable Docker Image Scanning](#task2)
+> * [Task 3: Create Jenkins User](#task3)
+>   * [Task 3.1: Create Jenkins DTR Token](#task3.1)
 > * [Task 4: Create DTR Repository](#task4)
->   * [Task 4.1: Enable Docker Image Scanning](#task4.1)
->   * [Task 4.2: Create Repositories](#task4.2)
->   * [Task 4.3: Create Promotion Policy](#task4.3)
+>   * [Task 4.1: Create Promotion Policy (Private to Public)](#task4.1)
+>   * [Task 4.2: Create Promotion Policy (Private to Hub.docker.com)](#task4.2)
 > * [Task 5: Pull / Push Docker Image ](#task5)
 >   * [Task 5.1: Pull Image](#task5.1)
 >   * [Task 5.2: Tag Image](#task5.2)
 >   * [Task 5.3: Push Image](#task5.2)
-> * [Task 6: Bad Docker Image ](#task6)
+> * [Task 6: Review Scan Results ](#task6)
+>   * [Task 6.1: Manually Promote Image ](#task6.1)
 > * [Task 7: Docker Content Trust ](#task7)
+> * [Task 8: Automate with Jenkins ](#task8)
 > * [Conclusion](#conclusion)
 
 ## Document conventions
@@ -47,7 +49,7 @@ This lab requires an instance of Docker Enterprise Edition (EE). Docker Enterpri
 
 ## Understanding the Play With Docker Interface
 
-![](./images/pwd_screen.jpg)
+![](./img/pwd_screen.jpg)
 
 This workshop is only available to people in a pre-arranged workshop. That may happen through a [Docker Meetup](https://events.docker.com/chapters/), a conference workshop that is being led by someone who has made these arrangements, or special arrangements between Docker and your company. The workshop leader will provide you with the URL to a workshop environment that includes [Docker Enterprise Edition](https://www.docker.com/enterprise-edition). The environment will be based on [Play with Docker](https://labs.play-with-docker.com/).
 
@@ -58,11 +60,9 @@ There are three main components to the Play With Docker (PWD) interface.
 ### 1. Console Access
 Play with Docker provides access to the 3 Docker EE hosts in your Cluster. These machines are:
 
-* A Linux-based Docker EE 18.01 Manager node
-* Three Linux-based Docker EE 18.01 Worker nodes
+* A Linux-based Docker EE 2.0 (UCP 3.0.1 & 17.06.2-ee11)  Manager node
+* Three Linux-based Docker EE 2.0 (17.06.2-ee11) Worker nodes
 * A Windows Server 2016-based Docker EE 17.06 Worker Node
-
-> **Important Note: beta** Please note, as of now this is a beta Docker EE 2.0 environment. Docker EE 2.0 shows off the new Kubernetes functionality which is described below.
 
 By clicking a name on the left, the console window will be connected to that node.
 
@@ -83,62 +83,28 @@ This workshop is designed to demonstrate the power of Docker Secrets, Image Prom
 
 2. Fill out the form, and click `submit`. You will then be redirected to the PWD environment.
 
-	It may take a few minutes to provision out your PWD environment. After this step completes, you'll be ready to move on to task 1.2: Install a Windows worker node
+	It may take a minute or so to provision out your PWD environment. 
+	
+### <a name="task1.1"></a>Task 1.1: Set Up Environment Variables
+We are going to use `worker3` for all our command line work. Click on `worker3` to activate the shell. 
 
+![](img/worker3.jpg)
+
+Now we need to setup a few variables. But the easiest way is to clone the Workshop Repo.
+
+```
+git clone https://github.com/clemenko/dc18_supply_chain.git
+```
+
+Once cloned, now we can run the `var_setup.sh` script. 
+
+```
+cd dc18_supply_chain
+. ./var_setup.sh
+```
+	
 ## <a name="task2"></a>Task 2: Create Secrets
-Secrets are new starting with Docker EE Engine 1.13 as well as Docker EE 17.03. A _secret_ is a blob of data such as a password, SSH private key, SSL certificate, or another piece of data that should not be transmitted over a network. Before UCP secrets were stored unencrypted in a Dockerfile or stored in your application's source code. With UCP Secrets we can now centrally manage and securely transmit it only to those containers that need access to it. Secrets follow a Least Privileged Distribution model and are encrypted at rest and in transit in a Docker swarm. A given secret is only accessible to those services which have been granted explicit access to it and only while those service tasks are running.
 
-Secrets requires a swarm mode cluster. Use secrets to manage any sensitive data which a container needs at runtime but shouldn't be stored in the image or in source control such as:
-
-- Usernames and passwords
-- TLS certificates and keys
-- SSH keys
-- Other important data such as the name of a database or internal server
-- Generic strings or binary content (up to 500 kb in size)
-
-> **Note**: Docker secrets are only available to swarm services, not to standalone containers. To use this feature, consider adapting the container to run as a service with a scale of 1.
-
-Another use case for using secrets is to provide a layer of abstraction between the container and a set of credentials. Consider a scenario where there have separate development, test, and production environments for an application. Each of these environments can have different credentials, stored in the development, test, and production swarms with the same secret name. The containers only need to know the name of the secret to function in all three environments.
-
-When a secret is added to the swarm, Docker sends the secret to the swarm manager over a mutual TLS connection. The secret is stored in the Raft log, which is encrypted. The entire Raft log is replicated across the other managers, ensuring the same high availability guarantees for secrets as for the rest of the swarm management data.
-
-![](images/secret-keys.jpg)
-
-When a newly-created or running service is granted access to a secret, the decrypted secret is mounted into the container in an in-memory filesystem at `/run/secrets/<secret_name>`. It is possible to update a service to grant it access to additional secrets or revoke its access to a given secret at any time.
-
-A node only has access to (encrypted) secrets if the node is a swarm manager or if it is running service tasks which have been granted access to the secret. When a container task stops running, the decrypted secrets shared to it are unmounted from the in-memory filesystem for that container and flushed from the node's memory.
-
-If a node loses connectivity to the swarm while it is running a task container with access to a secret, the task container still has access to its secrets but cannot receive updates until the node reconnects to the swarm.
-
-Let's start creating...
-
-1. From the main PWD screen click the `UCP` button on the left side of the screen
-
-	> **Note**: Because this is a lab-based install of Docker EE we are using the default self-signed certs. Because of this your browser may display a security warning. It is safe to click through this warning.
-	>
-	> In a production environment you would use certs from a trusted certificate authority and would not see this screen.
-	>
-	> ![](./images/ssl_error.png)
-
-2. When prompted enter your username and password (these can be found below the console window in the main PWD screen). The UCP web interface should load up in your web browser.
-
-	> **Note**: Once the main UCP screen loads you'll notice there is a red warning bar displayed at the top of the UCP screen, this is an artifact of running in a lab environment. A UCP server configured for a production environment would not display this warning
-	>
-	> ![](./images/red_warning.jpg)
-
-3. Navigate to `Swarm` --> `Secrets` on the left hand menu. And then click `Create Secret`.
-    > ![](images/create_secret.jpg)
-
-4. We are going to create a secret titled `title_v1`. The Content of the secret doesn't matter. Here is an idea `2018 Docker Government Summit is fun and secure.` We do not need to add it to a collection at this point. It will default to our private collection.
-    ![](images/create_secret_v1.jpg)
-
-5. Now let's create a second secret called `title_v2` with the content `2018 Dockercon in San Francisco might be more fun.`.
-  ![](images/create_secret_v2.jpg)
-
-6. You should now have two secrets named `title_v1` and `title_v2`.
-  ![](images/secret_list.jpg)
-
-Perfect. Now we can deploy a services that will use the first secret.
 
 
 ## <a name="task3"></a>Task 3: Deploy Docker Stack
@@ -170,31 +136,31 @@ We are going to use a `Stack` to deploy a `Service` that will use the newly crea
       title_v1:
         external: true
   ```
-   ![](images/stack_deploy.jpg)
+   ![](img/stack_deploy.jpg)
 
 3. Once the deploy is complete click `Done`. No we can verify it is deployed by navigating to `Shared Resources` --> `Services` and look for the `summit_app` service.
 
-  ![](images/service_list.jpg)
+  ![](img/service_list.jpg)
 
 4. Let's check the resulting webpage. Click on the service itself --> `summit_app`. You will notice a Right hand menu appear. Here you will find a `Published Endpoints` section. Click on the endpoint.
-  ![](images/endpoint.jpg)
+  ![](img/endpoint.jpg)
 
 5. Once the page has loaded. Hit `Refresh` in the browser. Notice the `server` field change? There are actually two containers that are using the same secret.
-  ![](images/webpage.jpg)
+  ![](img/webpage.jpg)
 
 ### <a name="task3.1"></a>Task 3.1: Update Service
 To show some of the flexibility of secrets we can update the service to use the new secret.
 
 1. Navigate back to UCP --> `Swarm` --> `Services` --> `summit_app`. This time instead of clicking on the endpoint. Let's click on `Configure` --> `Environment`.
-  ![](images/environment.jpg)
+  ![](img/environment.jpg)
 
 2. Remove the old Secret by clicking the `X` on the right hand side.
-   ![](images/secret_delete.jpg)
+   ![](img/secret_delete.jpg)
 
 3. Add the new secret by clicking `Use Secret +`. The `Secret Name` is now `title_v2`. The `Target Name` should be `secret`. You an compare this to the stack we deployed earlier. Click `Confirm` to complete the addition.
  > **Note**: Notice the Name changed and the Target Name is the same.
 
- ![](images/secret_added.jpg)
+ ![](img/secret_added.jpg)
 
 4. Click `Save` to complete the update.
 5. Now go back to the tab with the webpage and hit refresh. Keep refreshing and notice the change in the the `server` field and the secret. You effectively created a rolling update of the service without loosing availability to the app.
@@ -211,11 +177,11 @@ Before we create the repositories, let's start with enabling the Docker Image Sc
 	>
 	> In a production environment you would use certs from a trusted certificate authority and would not see this screen.
 	>
-	> ![](./images/ssl_error.png)
+	> ![](./img/ssl_error.png)
 
 2.  Navigate to `System` --> `Security`.
 3.  Select `Enable Scanning`. In the popup leave it in `Online` mode and select `Enable`. The CVE database will start downloading. This can take a few minutes. Please be patient for it to complete.
-    ![](images/scanning_enable.jpg)
+    ![](img/scanning_enable.jpg)
 
 ### <a name="task4.2"></a>Task 4.2: Create Repositories
 We can now create the two repositories.
@@ -223,12 +189,12 @@ We can now create the two repositories.
 1. Navigate to `Repositories` on the left menu and click `New repository`.
 2. Create that looks like `admin`/`alpine_build`. Make sure you click `Private`. Do not click `Create` yet!
 3. Click `Show advanced settings` and then click `On Push` under `SCAN ON PUSH`.  This will ensure that the CVE scan will start right after every push to this repository.  Click `Create`.
-  ![](images/new_repo.jpg)
+  ![](img/new_repo.jpg)
 
  4. Now let's create the second repository in a similar fashion. Create a `Public` repository as `admin`/`alpine` with `SCAN ON PUSH` set to `On Push`.
 
  5. We should have two repositories now.
-    ![](images/repo_list.jpg)
+    ![](img/repo_list.jpg)
 
 ### <a name="task4.3"></a>Task 4.3: Create Promotion Policy
 With the two repositories setup we can now define the promotion policy. We need to create a target policy that has a `CRITERIA` of `Critical Vulnerabilities` equal to zero. The policy will target the `admin`/`alpine` repository.
@@ -236,7 +202,7 @@ With the two repositories setup we can now define the promotion policy. We need 
 1. Navigate to the `admin`/`alpine_build` repository. Click `Promotions` and click `New promotion policy`.
 2. In the `PROMOTE TO TARGET IF...` box select `Critical Vulnerabilities` and then check `equals`. In the box below `equals` enter the number zero (0) and click `Add`.
 3. Set the `TARGET REPOSITORY` to `admin`/`alpine` and click `Save & Apply`.
-  ![](images/promo_policy.jpg)
+  ![](img/promo_policy.jpg)
 
  Perfect. Now let's push am image that will be scanned and promoted.
 
@@ -247,7 +213,7 @@ In order to push and pull images to DTR we will need to take advantage of PWD's 
 2. Click on `worker1`. Honestly, it doesn't matter which worker we use. We just need a docker daemon.
 3. In the console we need to create a variable called `URL` from the `DTR Hostname`. This will greatly reduce the amount of typing. Locate the url.
 
-     ![](images/dtr_url.jpg)
+     ![](img/dtr_url.jpg)
 
   In the console type :
   >**Note:** Change the `URL` to what is listed for your DTR Hostname.
@@ -256,7 +222,7 @@ In order to push and pull images to DTR we will need to take advantage of PWD's 
   URL=ip172-18-0-6-bb1tkep2a5gg0083vd7g.direct.beta-hybrid.play-with-docker.com
   ```
 
-4. Now we can start pulling images.
+4. Now we can start pulling img.
 
   ```
   docker pull alpine
@@ -294,12 +260,12 @@ In order to push and pull images to DTR we will need to take advantage of PWD's 
 8. With the completed `docker push` we can now navigate back to the DTR's gui. From the gui we can check on the image scan. Navigate to `Repositories` --> `admin/alpine_build`--> `IMAGES`. You should see a similar image tagged `latest`.
  >**Note:** Did your image scan clean?
 
-  ![](images/build_image.jpg)
+  ![](/build_image.jpg)
 
 8. Now let's check the `admin/alpine` images. Navigate to `Repositories` --> `admin/alpine`--> `IMAGES`.
  >**Note:** Do you see the `PROMOTED` badge?
 
-  ![](images/promoted.jpg)
+  ![](/promoted.jpg)
 
 ## <a name="task6"></a>Task 6: Bad Docker Image
 Let's take a look at pushing an older image that we know will have some vulnerabilities.
@@ -325,10 +291,10 @@ Let's take a look at pushing an older image that we know will have some vulnerab
 
 
 3. Navigate to DTR --> `Repostories` --> `admin/alpine` --> `Images`.
-    ![](images/old_image.jpg)
+    ![](/img/old_image.jpg)
 
 4. Take a look at the details to see exactly what piece of the image is vulnerable.
-    ![](images/old_image_details.jpg)
+    ![](img/old_image_details.jpg)
 
 
 ## <a name="task7"></a>Task 7: Docker Content Trust
@@ -361,11 +327,11 @@ The following examples shows the basic usage of Notary. To use image signing, cr
 
    Pushing with `DOCKER_CONTENT_TRUST=1` will check If the necessary keys are setup. If not, the docker client will ask you to generate them. As you can see in the example below you will need to create a `root` key password and a `repository` key password. Feel free to enter any password. Here is an example:
 
-  ![](images/signed.jpg)
+  ![](img/signed.jpg)
 
 4. Review the repository on DTR now.
 
-  ![](images/dtr_signed.jpg)
+  ![](img/dtr_signed.jpg)
 
 
 ## <a name="Conclusion"></a>Conclusion
