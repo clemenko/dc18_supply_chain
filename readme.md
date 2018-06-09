@@ -20,17 +20,14 @@ In this lab you will integrate Docker Enterpise Edition Advanced in to your deve
 >   * [Task 3.3: Create Jenkins DTR Token](#task3.3)
 > * [Task 4: Create DTR Repository](#task4)
 >   * [Task 4.1: Create Promotion Policy (Private to Public)](#task4.1)
->   * [Task 4.2: Create Promotion Policy (Private to Hub.docker.com)](#task4.2)
 > * [Task 5: Pull / Tag / Push Docker Image ](#task5)
->   * [Task 5.1: Pull Image](#task5.1)
->   * [Task 5.2: Tag Image](#task5.2)
->   * [Task 5.3: Push Image](#task5.3)
 > * [Task 6: Review Scan Results ](#task6)
 >   * [Task 6.1: Manually Promote Image ](#task6.1)
 > * [Task 7: Docker Content Trust ](#task7)
-> * [Task 8: Automate with Jenkins ](#task8)
->   * [Task 8.1: Deploy Jenkins](#task8.1)
->   * [Task 8.2: Plumb Jenkins](#task8.2)
+> * [Task 8: Extend with Mirroring ](#task8)
+> * [Task 9: Automate with Jenkins ](#task9)
+>   * [Task 9.1: Deploy Jenkins](#task9.1)
+>   * [Task 9.2: Plumb Jenkins](#task9.2)
 > * [Conclusion](#conclusion)
 
 ## Document conventions
@@ -300,44 +297,18 @@ In order to push and pull images to DTR we will need to take advantage of PWD's 
   docker push $DTR_URL/ci/dc18_build:bad
   ```
 
-8. With the completed `docker push` we can now navigate back to the DTR's gui. From the gui we can check on the image scan. Navigate to `Repositories` --> `admin/alpine_build`--> `IMAGES`. You should see a similar image tagged `latest`.
- >**Note:** Did your image scan clean?
+## <a name="task6"></a>Task 6: Review Scan Results
+Lets take a good look at the scan results from the images. Please keep in mind this will take a few minutes to complete. 
 
-  ![](/build_image.jpg)
+1. Navigate to DTR --> `Repostories` --> `ci/dc18_build` --> `Images`.
 
-8. Now let's check the `admin/alpine` images. Navigate to `Repositories` --> `admin/alpine`--> `IMAGES`.
- >**Note:** Do you see the `PROMOTED` badge?
-
-  ![](/promoted.jpg)
-
-## <a name="task6"></a>Task 6: Bad Docker Image
-Let's take a look at pushing an older image that we know will have some vulnerabilities.
-
-1. Docker pull :
-
-   ```
-   docker pull alpine:3.1
-   ```
-
-
-2. Tag and push to DTR.
-
-    ```
-    docker tag alpine:3.1 $URL/admin/alpine_build:3.1
-    ```
-
-    and
-
-    ```
-    docker push $URL/admin/alpine_build:3.1
-    ```
-
-
-3. Navigate to DTR --> `Repostories` --> `admin/alpine` --> `Images`.
     ![](/img/old_image.jpg)
 
-4. Take a look at the details to see exactly what piece of the image is vulnerable.
+2. Take a look at the details to see exactly what piece of the image is vulnerable.
+
     ![](img/old_image_details.jpg)
+
+### <a name="task4.2"></a>Task 4.2: Create Promotion Policy - Private to Hub.docker.com
 
 
 ## <a name="task7"></a>Task 7: Docker Content Trust
@@ -376,7 +347,9 @@ The following examples shows the basic usage of Notary. To use image signing, cr
 
   ![](img/dtr_signed.jpg)
 
-## <a name="task8"></a>Task 8: Automate with Jenkins
+## <a name="task8"></a>Task 8: Extend with Mirroring
+
+## <a name="task9"></a>Task 9: Automate with Jenkins
 
 ## <a name="Conclusion"></a>Conclusion
 In this lab we been able to leverage the power of Docker Enterprise Edition for creating and using secrets. We also were able to create the foundation of a secure supply chain with Docker Image Scanning and Docker Content Trust.
