@@ -21,14 +21,16 @@ In this lab you will integrate Docker Enterpise Edition Advanced in to your deve
 > * [Task 4: Create DTR Repository](#task4)
 >   * [Task 4.1: Create Promotion Policy (Private to Public)](#task4.1)
 >   * [Task 4.2: Create Promotion Policy (Private to Hub.docker.com)](#task4.2)
-> * [Task 5: Pull / Push Docker Image ](#task5)
+> * [Task 5: Pull / Tag / Push Docker Image ](#task5)
 >   * [Task 5.1: Pull Image](#task5.1)
 >   * [Task 5.2: Tag Image](#task5.2)
->   * [Task 5.3: Push Image](#task5.2)
+>   * [Task 5.3: Push Image](#task5.3)
 > * [Task 6: Review Scan Results ](#task6)
 >   * [Task 6.1: Manually Promote Image ](#task6.1)
 > * [Task 7: Docker Content Trust ](#task7)
 > * [Task 8: Automate with Jenkins ](#task8)
+>   * [Task 8.1: Deploy Jenkins](#task8.1)
+>   * [Task 8.2: Plumb Jenkins](#task8.2)
 > * [Conclusion](#conclusion)
 
 ## Document conventions
@@ -85,26 +87,26 @@ This workshop is designed to demonstrate the power of Docker Secrets, Image Prom
 
 2. Fill out the form, and click `submit`. You will then be redirected to the PWD environment.
 
-	It may take a minute or so to provision out your PWD environment. 
-	
+	It may take a minute or so to provision out your PWD environment.
+
 ### <a name="task1.1"></a>Task 1.1: Set Up Environment Variables
-We are going to use `worker3` for all our command line work. Click on `worker3` to activate the shell. 
+We are going to use `worker3` for **ALL** our command line work. Click on `worker3` to activate the shell.
 
 ![](img/worker3.jpg)
 
-Now we need to setup a few variables. But the easiest way is to clone the Workshop Repo.
+Now we need to setup a few variables. We need to create `DTR_URL` and `DTR_USERNAME`. But the easiest way is to clone the Workshop Repo and run script. 
 
 ```
 git clone https://github.com/clemenko/dc18_supply_chain.git
 ```
 
-Once cloned, now we can run the `var_setup.sh` script. 
+Once cloned, now we can run the `var_setup.sh` script.
 
 ```
 . dc18_supply_chain/var_setup.sh
 ```
-	
-Now your PWD environment variables are setup. We will use the variables for some scripting. 
+
+Now your PWD environment variables are setup. We will use the variables for some scripting.
 
 
 ## <a name="task2"></a>Task 2: Enable Docker Image Scanning
@@ -127,30 +129,30 @@ Before we create the repositories, let's start with enabling the Docker Image Sc
 **You will notice the yellow banner while DTR is downloading the CVE database. It will take some time to download.**
 
 ## <a name="task3"></a>Task 3: Create Jenkins User and Organization
-In order to setup our automation we need to create an organization and a user account for Jenkins. We are going to create a user named `jenkins` in the organization `ci`. 
+In order to setup our automation we need to create an organization and a user account for Jenkins. We are going to create a user named `jenkins` in the organization `ci`.
 
 ### <a name="task3.1"></a>Task 3.1: Create Jenkins Organization
-1. From the `PWD` main page click on `DTR`. 
+1. From the `PWD` main page click on `DTR`.
 
 ![](img/orgs_1.jpg)
 
-2. Once in `DTR` navigate to `Organizations` on the left. 
+2. Once in `DTR` navigate to `Organizations` on the left.
 3. Now click `New organization`.
 4. Type in `ci` and click `Save`.
 
 ![](img/new_org.jpg)
 
-Now we should see the organization named `ci`. 
+Now we should see the organization named `ci`.
 
 ![](img/orgs_2.jpg)
 
 ### <a name="task3.2"></a>Task 3.2: Create Jenkins User
-While remaining in DTR we can create the user from here. 
+While remaining in DTR we can create the user from here.
 
 1. Click on the organization `ci`.
-2. Click `Add user`. 
+2. Click `Add user`.
 3. Make sure you click the radio button `New`. Add a new user name `jenkins`. Set a simple password that you can remember. Maybe `admin1234`?
- 
+
 ![](img/new_user.jpg)
 
 Now change the permissions for the `jenkins` account to `Org Owner`.
@@ -158,19 +160,19 @@ Now change the permissions for the `jenkins` account to `Org Owner`.
 ![](img/org_admin.jpg)
 
 ### <a name="task3.3"></a>Task 3.3: Create Jenkins DTR Token
-Now that we have the `jenkins` user created we need to add a token for use with DTR's API. 
+Now that we have the `jenkins` user created we need to add a token for use with DTR's API.
 
-Navigate to `Users` on the left pane. Click on `jenkins`, then click the `Access Tokens` tab. 
+Navigate to `Users` on the left pane. Click on `jenkins`, then click the `Access Tokens` tab.
 
 ![](img/token.jpg)
 
-Click `New access token`. Enter `api` into the description field and click `Create`.  
+Click `New access token`. Enter `api` into the description field and click `Create`.
 
 **Write down the token that is displayed. You will need this again!**
 
-It should look like `ee9d7ff2-6fd4-4a41-9971-789e06e0d5d5`. Click `Done`. 
+It should look like `ee9d7ff2-6fd4-4a41-9971-789e06e0d5d5`. Click `Done`.
 
-Lets add it to the `worker3` environment. 
+Lets add it to the `worker3` environment.
 
 ```
 export DTR_TOKEN=ee9d7ff2-6fd4-4a41-9971-789e06e0d5d5
@@ -179,19 +181,19 @@ export DTR_TOKEN=ee9d7ff2-6fd4-4a41-9971-789e06e0d5d5
 ## <a name="task4"></a>Task 4: Create DTR Repository
 We now need to access Docker Trusted Registry to setup two repositories.
 
-We have an easy way with a script or the hard way by using the GUI. 
+We have an easy way with a script or the hard way by using the GUI.
 
-Either way we need to create two repositories, `dc18_build` and `dc18`. `dc18_build` will be used for the private version of the image. `dc18` will be the public version once an CVE scan is complete. 
+Either way we need to create two repositories, `dc18_build` and `dc18`. `dc18_build` will be used for the private version of the image. `dc18` will be the public version once an CVE scan is complete.
 
 **Easy Way:**
 
-Since we `git cloned` the repo for this workshop we can use a script that will create the repo. 
+Since we `git cloned` the repo for this workshop we can use a script that will create the repo.
 
 ```
 ./dc18_supply_chain/create_repos.sh
 ```
 
-Feel free to `cat` the file to see how we are using `curl` and the API to create the repositories. 
+Feel free to `cat` the file to see how we are using `curl` and the API to create the repositories.
 
 ```
 cat ./dc18_supply_chain/create_repos.sh
@@ -249,58 +251,53 @@ With the two repositories setup we can now define the promotion policy. We need 
   ![](img/promo_policy.jpg)
 
  Perfect. Now let's push am image that will be scanned and promoted.
- 
-### <a name="task4.2"></a>Task 4.2: Create Promotion Policy - Private to Hub.docker.com 
 
-## <a name="task5"></a>Task 5: Pull / Push Docker Image
+### <a name="task4.2"></a>Task 4.2: Create Promotion Policy - Private to Hub.docker.com
+
+## <a name="task5"></a>Task 5: Pull / Tag / Push Docker Image
+Lets pull, tag, and push a few images to YOUR DTR. 
+
 In order to push and pull images to DTR we will need to take advantage of PWD's Console Access.
 
 1. Navigate back to the PWD tab in your browser.
-2. Click on `worker1`. Honestly, it doesn't matter which worker we use. We just need a docker daemon.
-3. In the console we need to create a variable called `URL` from the `DTR Hostname`. This will greatly reduce the amount of typing. Locate the url.
-
-     ![](img/dtr_url.jpg)
-
-  In the console type :
-  >**Note:** Change the `URL` to what is listed for your DTR Hostname.
+2. Click on `worker3`. 
+3. In the console we should already have a variable called `DTR_URL`. Lets check. 
 
   ```
-  URL=ip172-18-0-6-bb1tkep2a5gg0083vd7g.direct.beta-hybrid.play-with-docker.com
+  echo $DTR_URL
   ```
+  If you are not sure please follow [Task 1.1: Set Up Environment Variables](#task1.1). 
+  
 
-4. Now we can start pulling img.
+4. Now we login to our DTR server using your `DTR_TOKEN` from [Task 3.3: Create Jenkins DTR Token](#task3.3).
+
+   ```
+   docker login -u jenkins -p $DTR_TOKEN $DTR_URL
+   ```
+5. Now we can start pulling a few images.
 
   ```
-  docker pull alpine
+  docker pull clemenko/dc18:0.1
+  docker pull clemenko/dc18:0.2
+  docker pull clemenko/dc18:bad
   ```
-  This command is pulling the `alpine` image from [hub.docker.com](https://hub.docker.com).
+  This command is pull a few images from [hub.docker.com](https://hub.docker.com).
 
-  ```
-  [worker1] (local) root@10.20.0.23 ~
-  $ docker pull alpine
-  Using default tag: latest
-  latest: Pulling from library/alpine
-  Digest: sha256:7df6db5aa61ae9480f52f0b3a06a140ab98d427f86d8d5de0bedab9b8df6b1c0
-  Status: Image is up to date for alpine:latest
- ```
-
-5. Now let's tag the image for our DTR instance. We will use the `URL` variable we set before.
+6. Now let's tag the image for our DTR instance. We will use the `URL` variable we set before.
    The tag command looks like `docker image tag <FROM> <TO>`.
 
    ```
-   docker image tag alpine $URL/admin/alpine_build
+   docker tag clemenko/dc18:0.1 $DTR_URL/ci/dc18_build:0.1
+   docker tag clemenko/dc18:0.2 $DTR_URL/ci/dc18_build:0.2
+   docker tag clemenko/dc18:bad $DTR_URL/ci/dc18_build:bad
    ```
 
-
-6. Now let's `docker login` into our DTR instance with the `admin` credentials.
-
-  ```
-  docker login -u admin $URL
-  ```
-7. Now we can `docker push` the image to DTR.
+7. Now we can `docker push` the images to DTR.
 
   ```
-  docker push $URL/admin/alpine_build
+  docker push $DTR_URL/ci/dc18_build:0.1
+  docker push $DTR_URL/ci/dc18_build:0.2
+  docker push $DTR_URL/ci/dc18_build:bad
   ```
 
 8. With the completed `docker push` we can now navigate back to the DTR's gui. From the gui we can check on the image scan. Navigate to `Repositories` --> `admin/alpine_build`--> `IMAGES`. You should see a similar image tagged `latest`.
