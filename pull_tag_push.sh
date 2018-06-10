@@ -1,4 +1,5 @@
 #!/bin/bash
+#this script will pull, tag and push images for PWD.
 
 if [ -z ${DTR_URL+x} ]; then
   echo Setting variables for you...
