@@ -1,7 +1,7 @@
 FROM alpine as build
 RUN apk -U add docker
 
-FROM jenkins:alpine
+FROM jenkins/jenkins:lts-alpine
 LABEL maintainer="clemenko@docker.com", \
       org.label-schema.vcs-url="https://github.com/clemenko/dc18_supply_chain", \
       org.label-schema.docker.cmd="docker run -d -v /var/run/docker.sock:/var/run/docker.sock -v /jenkins/:/var/jenkins_home -v /jenkins/.ssh:/root/.ssh/ -p 8080:8080 -p 50000:50000 --name jenkins superjenkins"
