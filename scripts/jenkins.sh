@@ -16,6 +16,12 @@ if [ -z ${DOCKER_HOST+x} ]; then
   . ~/dc18_supply_chain/env.sh
 fi
 
+
+echo "======================================================================================"
+echo "Jenkins URL is going to be : http://$DOCS_URL:8080"
+echo "======================================================================================"
+read -p "Press any key..."
+
 docker stack deploy -c ~/dc18_supply_chain/jenkins/jenkins.yml jenkins
 sleep 5
 docker logs -f $(docker ps|grep jenkins|awk '{print $1}')
