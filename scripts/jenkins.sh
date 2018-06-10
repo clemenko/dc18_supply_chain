@@ -3,7 +3,7 @@
 
 if [ -z ${DOCS_URL+x} ]; then
   echo "Setting variables for you..."
-  . ~/dc18_supply_chain/scripts/var_setup.sh
+  . ./var_setup.sh
 fi
 
 if [ ! -f ~/dc18_supply_chain/env.sh ]; then
