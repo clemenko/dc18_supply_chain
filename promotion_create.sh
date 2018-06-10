@@ -7,9 +7,9 @@ if [ -z ${DTR_TOKEN+x} ]; then
   exit
 fi
 
-curl -X POST -k -L \
+curl -X POST -sk -L \
   -u $DTR_USERNAME:$DTR_TOKEN \
-   https://$DTR_URL/api/v0/repositories/ci/dc18_build \
+   https://$DTR_URL/api/v0/repositories/ci/dc18_build/promotionPolicies?initialEvaluation=true \
   -H 'Content-Type: application/json' \
   -d '{
   "enabled": true,
