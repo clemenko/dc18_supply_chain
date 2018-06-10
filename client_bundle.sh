@@ -1,7 +1,7 @@
 #!/bin/bash
 #this script will create, curl and unpack a client bundle
 
-if [ -z ${DTR_URL+x} ]; then
+if [ -z ${UCP_URL+x} ]; then
   echo Setting variables for you...
   . ./var_setup.sh
 fi
