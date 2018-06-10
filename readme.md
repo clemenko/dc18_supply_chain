@@ -396,32 +396,6 @@ We can create policy enforcement within Universal Control Plane (UCP) such that 
 
 
 
-1. Pull the image locally.
-
-   ```
-   docker pull $URL/admin/alpine
-   ```
-
-2. Enable Docker Content Trust on the client side.
-
-   ```
-   export DOCKER_CONTENT_TRUST=1
-   ```
-
-3. Push the alpine image back.
- >**Note:** For Docker Content Trust you need to push/pull with the tag. Defaulting to latest doesn't work.
-
-   ```
-   docker push $URL/admin/alpine:latest
-   ```
-
-   Pushing with `DOCKER_CONTENT_TRUST=1` will check If the necessary keys are setup. If not, the docker client will ask you to generate them. As you can see in the example below you will need to create a `root` key password and a `repository` key password. Feel free to enter any password. Here is an example:
-
-  ![](img/signed.jpg)
-
-4. Review the repository on DTR now.
-
-  ![](img/dtr_signed.jpg)
 
 ## <a name="task9"></a>Task 9: Automate with Jenkins
 
