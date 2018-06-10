@@ -7,7 +7,7 @@ if [ -z ${NOTARY_OPTS+x} ]; then
 fi
 
 export NAMESPACE="ci"
-export REPO="dc18"
+export REPO="notary"
 export ROLE="demo"
 
 # initialize repository in notary
@@ -35,5 +35,6 @@ notary ${NOTARY_OPTS} key import key.pem
 export DOCKER_CONTENT_TRUST=1
 
 #push signed image
-docker tag ${DTR_URL}/${NAMESPACE}/dc18_build:0.3 ${DTR_URL}/${NAMESPACE}/${REPO}:0.3
+docker pull alpine
+docker tag alpine ${DTR_URL}/${NAMESPACE}/${REPO}:0.3
 docker push ${DTR_URL}/${NAMESPACE}/${REPO}:0.3
