@@ -31,6 +31,21 @@ notary ${NOTARY_OPTS} delegation list ${DTR_URL}/${NAMESPACE}/${REPO}
 # load the key on the client
 notary ${NOTARY_OPTS} key import key.pem
 
+#create notary repo
+curl -X POST -k -L \
+  -u $DTR_USERNAME:$DTR_TOKEN \
+  https://$DTR_URL/api/v0/repositories/ci \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "enableManifestLists": true,
+  "immutableTags": true,
+  "longDescription": "",
+  "name": "notary",
+  "scanOnPush": true,
+  "shortDescription": "Dockercon 2018 Example - public",
+  "visibility": "public"
+}'
+
 # enable DCT
 export DOCKER_CONTENT_TRUST=1
 
