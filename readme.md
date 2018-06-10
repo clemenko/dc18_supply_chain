@@ -392,8 +392,52 @@ Since we already had an image that had the tag `promoted` we should see that the
 ## <a name="task8"></a>Task 8: Docker Content Trust --> Production
 Docker Content Trust/Notary provides a cryptographic signature for each image. The signature provides security so that the image requested is the image you get. Read [Notary's Architecture](https://docs.docker.com/notary/service_architecture/) to learn more about how Notary is secure. Since Docker EE is "Secure by Default," Docker Trusted Registry comes with the Notary server out of the box.
 
-We can create policy enforcement within Universal Control Plane (UCP) such that **ONLY** signed images from the `ci` team will be allowed to run. Since this 
+We can create policy enforcement within Universal Control Plane (UCP) such that **ONLY** signed images from the `ci` team will be allowed to run. Since this workshop is about DTR and Secure Supply Chain we will skip that step. 
 
+Let's sign our first Docker image?
+
+1. Right now you should have a promoted image `$DTR_URL/ci/dc18:promoted`. We need to tag it with a new `signed` tag.
+   
+   ```
+   docker tag $DTR_URL/ci/dc18:promoted $DTR_URL/ci/dc18:signed
+   ```
+   
+2. Now lets enable DCT. 
+
+    ```
+    export DOCKER_CONTENT_TRUST=1
+    ```
+    
+3. And push... It will ask you for a BUNCH of passwords. Do yourself a favor in this workshop and use `admin1234`. :D
+    
+    ```
+    docker push $DTR_URL/ci/dc18:signed
+    ```
+    
+    Here is an example output:
+    
+    ```
+[worker3] (local) root@10.20.0.32 ~/dc18_supply_chain
+$ docker push $DTR_URL/ci/dc18:signed
+The push refers to a repository [ip172-18-0-24-bcd8s0ddffhg00b2o320.direct.ee-beta2.play-with-docker.com/ci/dc18]
+cd7100a72410: Mounted from ci/dc18
+signed: digest: sha256:8c03bb07a531c53ad7d0f6e7041b64d81f99c6e493cb39abba56d956b40eacbc size: 528
+Signing and pushing trust metadata
+You are about to create a new root signing key passphrase. This passphrase
+will be used to protect the most sensitive key in your signing system. Please
+choose a long, complex passphrase and be careful to keep the password and the
+key file itself secure and backed up. It is highly recommended that you use a
+password manager to generate the passphrase and keep it safe. There will be no
+way to recover this key. You can find the key in your config directory.
+Enter passphrase for new root key with ID baf4f85:
+Repeat passphrase for new root key with ID baf4f85:
+Enter passphrase for new repository key with ID 8688152 (ip172-18-0-24-bcd8s0ddffhg00b2o320.direct.ee-beta2.play-with-docker.com/ci/dc18):
+Repeat passphrase for new repository key with ID 8688152 (ip172-18-0-24-bcd8s0ddffhg00b2o320.direct.ee-beta2.play-with-docker.com/ci/dc18):
+Finished initializing "ip172-18-0-24-bcd8s0ddffhg00b2o320.direct.ee-beta2.play-with-docker.com/ci/dc18"
+Successfully signed "ip172-18-0-24-bcd8s0ddffhg00b2o320.direct.ee-beta2.play-with-docker.com/ci/dc18":signed
+```
+
+Again please use the same password. It will simplify this part of the workshop. 
 
 
 
