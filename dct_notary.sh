@@ -35,4 +35,5 @@ notary ${NOTARY_OPTS} key import key.pem
 export DOCKER_CONTENT_TRUST=1
 
 #push signed image
+docker tag ${DTR_URL}/${NAMESPACE}/dc18_build:0.3 ${DTR_URL}/${NAMESPACE}/${REPO}:0.3
 docker push ${DTR_URL}/${NAMESPACE}/${REPO}:0.3
