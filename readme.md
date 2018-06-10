@@ -22,9 +22,10 @@ In this lab you will integrate Docker Enterpise Edition Advanced in to your deve
 >   * [Task 4.1: Create Promotion Policy (Private to Public)](#task4.1)
 > * [Task 5: Pull / Tag / Push Docker Image ](#task5)
 > * [Task 6: Review Scan Results ](#task6)
->   * [Task 6.1: Manually Promote Image ](#task6.1)
-> * [Task 7: Docker Content Trust ](#task7)
-> * [Task 8: Extend with Mirroring ](#task8)
+>   * [Task 6.1: Hide Vulnerabilities ](#task6.1)
+>   * [Task 6.2: Manually Promote Image ](#task6.2)
+> * [Task 7: Extend with Image Mirroring ](#task7)
+> * [Task 8: Docker Content Trust --> Production ](#task8)
 > * [Task 9: Automate with Jenkins ](#task9)
 >   * [Task 9.1: Deploy Jenkins](#task9.1)
 >   * [Task 9.2: Plumb Jenkins](#task9.2)
@@ -41,7 +42,6 @@ The following abbreviations are used in this document:
 * DTR = Docker Trusted Registry
 * DCT = Docker Content Trust
 * EE = Docker Enterprise Edition
-* BOM = Bill of Materials
 * CVE = Common Vulnerabilities and Exposures
 * PWD = Play With Docker
 
@@ -311,25 +311,90 @@ docker push $DTR_URL/ci/dc18_build:alpine
 ## <a name="task6"></a>Task 6: Review Scan Results
 Lets take a good look at the scan results from the images. Please keep in mind this will take a few minutes to complete. 
 
-1. Navigate to DTR --> `Repostories` --> `ci/dc18_build` --> `Images`.
+1. Navigate to DTR --> `Repostories` --> `ci/dc18_build` --> `Images`. 
+	
+	Do worry if you see images in a `Scanning...` or `Pending` state. Please click to another tab and click back. 
 
-    ![](/img/old_image.jpg)
+    ![](img/image_list.jpg)
 
 2. Take a look at the details to see exactly what piece of the image is vulnerable.
 
-    ![](img/old_image_details.jpg)
+     ![](img/image_list2.jpg)
+     
+     Click `View details` for an image that has vulnerabilities. How about `0.2`? There are two views for the scanning results, **Layers** and **Components**. The **Layers** view shows which layer of the image had the vulnerable binary. This is extremely useful when diagnosing where the vulnerability is in the Dockerfile.
+     
+     ![](img/image_view.jpg)
+     
+    The vulnerable binary is displayed, along with all the other contents of the layer, when you click the layer itself. In this example there are a few potentially vulnerable binaries:
+    
+    ![](img/image_comp.jpg)
+    
+    Now we have a chance to review each vulnerability by clicking the CVE itself, example `CVE-2017-17522`. This will direct you to Mitre's site for CVEs.
+    
+    ![](img/mitre.jpg)
+    
+    Now that we know what is in the image. We should probably act upon it. 
+    
+### <a name="task6.1"></a>Task 6.1: Hide Vulnerabilities
+If we find that they CVE is a false positive. Meaning that it might be disputed, or from OS that you are not using. If this is the case we can simply `hide` the image. This will not remove the fact that the CVE was hidden. 
 
-### <a name="task4.2"></a>Task 4.2: Create Promotion Policy - Private to Hub.docker.com
+1. Click `hide` for the two CVEs. 
 
+       ![](img/cve_hide.jpg)
 
-## <a name="task7"></a>Task 7: Docker Content Trust
-Docker Content Trust/Notary is a tool for publishing and managing trusted collections of content. Publishers can digitally sign collections and consumers can verify integrity and origin of content. This ability is built on a straightforward key management and signing interface to create signed collections and configure trusted publishers.
+       If we click back to `Images` we can now see that the image is clean. 
+       
+       ![](img/cve_clean.jpg)
+       
+       Once we have hidden some CVEs we might want to perform a manual promotion of the image. 
+       
+### <a name="task6.2"></a>Task 6.2: Manually Promote Image
+Manual promotions are useful for those times that you need to move an image from a `Private` repository to a `Public` one. To perform a manual promotion : 
 
+1. Click on an image's details. Lets go back to `0.2`, now click `Promote`. Lets `Promote` the image to `ci`/`dc18` with a tag of `promoted`. 
+
+     ![](img/promote.jpg) 
+
+2. Click `Promote`. 
+    Lets look at the promoted image. 
+    
+3. Navigate to `ci`/`dc18` --> `Images`. Notice the `PROMOTED` badge next to the TAG. 
+
+      ![](img/promoted.jpg) 
+     
+      Now that we use automated and manual promotions. Maybe we can extend promoting images beyond DTR. 
+      
+## <a name="task7"></a>Task 7: Extend with Image Mirroring
+Docker Trusted Registry allows you to create mirroring policies for a repository. When an image gets pushed to a repository and meets a certain criteria, DTR automatically pushes it to repository in another DTR deployment or Docker Hub.
+
+This not only allows you to mirror images but also allows you to create image promotion pipelines that span multiple DTR deployments and datacenters. Let's set one up. How about we mirror an image to [hub.docker.com](https://hub.docker.com)?
+
+1. Go to [hub.docker.com](https://hub.docker.com) and create an login and repository.
+
+2. Navigate to `Repositories` --> `ci`/`dc18` --> `MIRRORS` --> `New mirror`. 
+   Change the `REGISTRY TYPE` to `Docker Hub` and fill out the relevant information like:
+
+   ![](img/mirror.jpg)
+   
+3. Click `Connect` and scroll down. 
+4. Next create a `tag name` Trigger that is equal to `promoted`
+5. Leave the `%n` tag renaming the same. 
+6. Click `Connect`. 
+7. Click `Save & Apply`. 
+      
+      ![](img/mirror2.jpg)
+      
+      
+Since we already had an image that had the tag `promoted` we should see that the image was pushed to [hub.docker.com](https://hub.docker.com). In fact we can click on the [hub](https://hub.docker.com) repository name to see if the image push was successful. 
+
+![](img/mirror3.jpg)
+
+## <a name="task8"></a>Task 8: Docker Content Trust --> Production
 Docker Content Trust/Notary provides a cryptographic signature for each image. The signature provides security so that the image requested is the image you get. Read [Notary's Architecture](https://docs.docker.com/notary/service_architecture/) to learn more about how Notary is secure. Since Docker EE is "Secure by Default," Docker Trusted Registry comes with the Notary server out of the box.
 
-In addition, Docker Content Trust allows for threshold signing and gating for the releases. Under this model, software is not released until all necessary parties (or a quorum) sign off. This can be enforced by requiring (and verifying) the needed signatures for an image. This policy ensures that the image has made it through the whole process: if someone tries to make it skip a step, the image will lack a necessary signature, thus preventing deployment of that image.
+We can create policy enforcement within Universal Control Plane (UCP) such that **ONLY** signed images from the `ci` team will be allowed to run. Since this 
 
-The following examples shows the basic usage of Notary. To use image signing, create a repository in DTR and enable it on the local Docker engine. First, enable the client, and sign an image. Let's use the `admin/alpine` image.
+
 
 1. Pull the image locally.
 
@@ -357,8 +422,6 @@ The following examples shows the basic usage of Notary. To use image signing, cr
 4. Review the repository on DTR now.
 
   ![](img/dtr_signed.jpg)
-
-## <a name="task8"></a>Task 8: Extend with Mirroring
 
 ## <a name="task9"></a>Task 9: Automate with Jenkins
 
