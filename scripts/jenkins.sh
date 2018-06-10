@@ -20,6 +20,7 @@ fi
 echo "======================================================================================"
 echo "Jenkins URL is going to be : http://$DOCS_URL:8080"
 echo "======================================================================================"
+echo " Wait for the Jenkins Admin key and then hit Ctrl-C."
 read -p "Press any key..."
 
 docker stack deploy -c ~/dc18_supply_chain/jenkins/jenkins.yml jenkins
