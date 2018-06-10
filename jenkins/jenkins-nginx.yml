@@ -5,7 +5,7 @@ services:
      deploy:
       placement:
         constraints:
-          - node.hostname == worker3
+          - 'node.hostname == worker3'
     volumes:
       - /root/jenkins/data/:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
