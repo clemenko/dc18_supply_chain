@@ -25,7 +25,7 @@ In this lab you will integrate Docker Enterpise Edition Advanced in to your deve
 >   * [Task 6.1: Hide Vulnerabilities ](#task6.1)
 >   * [Task 6.2: Manually Promote Image ](#task6.2)
 > * [Task 7: Extend with Image Mirroring ](#task7)
-> * [Task 8: Docker Content Trust --> Production ](#task8)
+> * [Task 8: Docker Content Trust / Image Signing ](#task8)
 > * [Task 9: Automate with Jenkins ](#task9)
 >   * [Task 9.1: Deploy Jenkins](#task9.1)
 >   * [Task 9.2: Plumb Jenkins](#task9.2)
@@ -389,7 +389,7 @@ Since we already had an image that had the tag `promoted` we should see that the
 
 ![](img/mirror3.jpg)
 
-## <a name="task8"></a>Task 8: Docker Content Trust --> Production
+## <a name="task8"></a>Task 8: Docker Content Trust / Image Signing
 Docker Content Trust/Notary provides a cryptographic signature for each image. The signature provides security so that the image requested is the image you get. Read [Notary's Architecture](https://docs.docker.com/notary/service_architecture/) to learn more about how Notary is secure. Since Docker EE is "Secure by Default," Docker Trusted Registry comes with the Notary server out of the box.
 
 We can create policy enforcement within Universal Control Plane (UCP) such that **ONLY** signed images from the `ci` team will be allowed to run. Since this workshop is about DTR and Secure Supply Chain we will skip that step. 
