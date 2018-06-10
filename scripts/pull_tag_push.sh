@@ -3,7 +3,7 @@
 
 if [ -z ${DTR_URL+x} ]; then
   echo Setting variables for you...
-  . ./scripts/var_setup.sh
+  . ~/dc18_supply_chain/scripts/var_setup.sh
 fi
 
 if [ -z ${DTR_TOKEN+x} ]; then
