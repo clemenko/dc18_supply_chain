@@ -9,7 +9,7 @@ fi
 
 curl -X POST -k -L \
   -u $DTR_USERNAME:$DTR_TOKEN \
-   https://dtr.dockr.life/api/v0/repositories/ci/dc18_build \
+   https://$DTR_URL/api/v0/repositories/ci/dc18_build \
   -H 'Content-Type: application/json' \
   -d '{
   "enabled": true,
