@@ -6,7 +6,7 @@ if [ -z ${DOCS_URL+x} ]; then
   . ./scripts/var_setup.sh
 fi
 
-if [ -f env.sh ]; then
+if [ ! -f env.sh ]; then
   echo Creating a client bundle for you...
   . ./scripts/client_bundle.sh
 fi
