@@ -3,7 +3,7 @@
 
 if [ -z ${DOCS_URL+x} ]; then
   echo "Setting variables for you..."
-  source ~/dc18_supply_chain/scripts/var_setup.sh
+  . ~/dc18_supply_chain/scripts/var_setup.sh
 fi
 
 if [ ! -f ~/dc18_supply_chain/env.sh ]; then
@@ -15,3 +15,7 @@ if [ -z ${DOCKER_HOST+x} ]; then
   echo "Sourcing the client bundle for you..."
   . ~/dc18_supply_chain/env.sh
 fi
+
+docker stack deploy -c ~/dc18_supply_chain/jenkins/jenkins.yml jenkins
+sleep 5
+docker logs -f $(docker ps|grep jenkins|awk '{print $1}')
