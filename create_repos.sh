@@ -31,5 +31,5 @@ curl -X POST -k -L \
   "name": "dc18_build",
   "scanOnPush": true,
   "shortDescription": "Dockercon 2018 Example - private",
-  "visibility": "public"
+  "visibility": "private"
 }'

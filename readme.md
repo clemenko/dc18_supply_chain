@@ -169,10 +169,12 @@ Click `New access token`. Enter `api` into the description field and click `Crea
 
 It should look like `ee9d7ff2-6fd4-4a41-9971-789e06e0d5d5`. Click `Done`.
 
-Lets add it to the `worker3` environment.
+Lets add it to the `worker3` environment. Replace `<TOKEN>` with the token from DTR. 
 
 ```
-export DTR_TOKEN=ee9d7ff2-6fd4-4a41-9971-789e06e0d5d5
+#example
+#export DTR_TOKEN=ee9d7ff2-6fd4-4a41-9971-789e06e0d5d5
+export DTR_TOKEN=<TOKEN>
 ```
 
 ## <a name="task4"></a>Task 4: Create DTR Repository
