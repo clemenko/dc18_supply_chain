@@ -15,12 +15,12 @@ docker login -u jenkins -p $DTR_TOKEN $DTR_URL
 #pull
 docker pull clemenko/dc18:0.1
 docker pull clemenko/dc18:0.2
-docker pull clemenko/dc18:bad
+docker pull clemenko/dc18:0.3
 #tag
 docker tag clemenko/dc18:0.1 $DTR_URL/ci/dc18_build:0.1
 docker tag clemenko/dc18:0.2 $DTR_URL/ci/dc18_build:0.2
-docker tag clemenko/dc18:bad $DTR_URL/ci/dc18_build:bad
+docker tag clemenko/dc18:0.3 $DTR_URL/ci/dc18_build:0.3
 #push
 docker push $DTR_URL/ci/dc18_build:0.1
 docker push $DTR_URL/ci/dc18_build:0.2
-docker push $DTR_URL/ci/dc18_build:bad
+docker push $DTR_URL/ci/dc18_build:0.3
