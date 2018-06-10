@@ -4,3 +4,5 @@ export DTR_URL="$(curl -sS https://${PWD_HOST_FQDN}/sessions/${SESSION_ID} | jq 
 export DTR_USERNAME=admin
 export UCP_URL="$(curl -sS https://${PWD_HOST_FQDN}/sessions/${SESSION_ID} | jq -r '.instances[] | select(.hostname == "manager1") | .proxy_host').direct.${PWD_HOST_FQDN}"
 export NOTARY_OPTS="-d ${HOME}/.docker/trust -s https://${DTR_URL} --tlscacert /usr/local/share/ca-certificates/${DTR_URL}.crt"
+
+export PATH=$PATH:/root/dc18_supply_chain/
