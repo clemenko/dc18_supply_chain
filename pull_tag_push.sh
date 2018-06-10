@@ -1,7 +1,11 @@
 #!/bin/bash
-. ./var_setup.sh
 
-if [ -z "$DTR_TOKEN" ]; then
+if [ -z ${DTR_URL+x} ]; then
+  echo Setting variables for you...
+  . ./var_setup.sh
+fi
+
+if [ -z ${DTR_TOKEN+x} ]; then
   echo " Please create a DTR_TOKEN variable before preceeding..."
   exit
 fi

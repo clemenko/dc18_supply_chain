@@ -89,7 +89,7 @@ This workshop is designed to demonstrate the power of Docker Secrets, Image Prom
 ### <a name="task1.1"></a>Task 1.1: Set Up Environment Variables
 We are going to use `worker3` for **ALL** our command line work. Click on `worker3` to activate the shell.
 
-![](img/worker3.jpg)
+![](img/pwd_screen.jpg)
 
 Now we need to setup a few variables. We need to create `DTR_URL` and `DTR_USERNAME`. But the easiest way is to clone the Workshop Repo and run script. 
 
@@ -184,7 +184,7 @@ Either way we need to create two repositories, `dc18_build` and `dc18`. `dc18_bu
 
 **Easy Way:**
 
-Since we `git cloned` the repo for this workshop we can use a script that will create the repo.
+Since we used `git clone` to copy the repository to `worker3` for this workshop, there is a script from that will create the DTR repositories.
 
 ```
 ./dc18_supply_chain/create_repos.sh
@@ -193,9 +193,15 @@ Since we `git cloned` the repo for this workshop we can use a script that will c
 Feel free to `cat` the file to see how we are using `curl` and the API to create the repositories.
 
 ```
-cat ./dc18_supply_chain/create_repos.sh
+[worker3] (local) root@10.20.0.38 ~
+$ cat dc18_supply_chain/create_repos.sh
 #!/bin/bash
 # requires environment variables: DTR_HOST, DTR_USERNAME and DTR_TOKEN
+
+if [ -z "$DTR_TOKEN" ]; then
+  echo " Please create a DTR_TOKEN variable before preceeding..."
+  exit
+fi
 
 curl -X POST -k -L \
   -u $DTR_USERNAME:$DTR_TOKEN \
@@ -240,7 +246,7 @@ curl -X POST -k -L \
     ![](img/repo_list.jpg)
 
 ### <a name="task4.1"></a>Task 4.1: Create Promotion Policy - Private to Public
-With the two repositories setup we can now define the promotion policy. We need to create a target policy that has a `CRITERIA` of `Critical Vulnerabilities` equal to zero. The policy will target the `admin`/`alpine` repository.
+With the two repositories setup we can now define the promotion policy. We need to create a target policy that has a `CRITERIA` of `Critical Vulnerabilities` equal to zero. The policy will target the `ci`/`dc_18` repository.
 
 1. Navigate to the `admin`/`alpine_build` repository. Click `Promotions` and click `New promotion policy`.
 2. In the `PROMOTE TO TARGET IF...` box select `Critical Vulnerabilities` and then check `equals`. In the box below `equals` enter the number zero (0) and click `Add`.
