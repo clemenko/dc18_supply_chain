@@ -2,7 +2,7 @@ version: "3.2"
 services:
   jenkins:
     image: jenkins:alpine
-     deploy:
+    deploy:
       placement:
         constraints:
           - 'node.hostname == worker3'
