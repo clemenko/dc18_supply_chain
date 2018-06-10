@@ -248,16 +248,16 @@ curl -X POST -k -L \
     ![](img/repo_list.jpg)
 
 ### <a name="task4.1"></a>Task 4.1: Create Promotion Policy - Private to Public
-With the two repositories setup we can now define the promotion policy. We need to create a target policy that has a `CRITERIA` of `Critical Vulnerabilities` equal to zero. The policy will target the `ci`/`dc_18` repository.
+With the two repositories setup we can now define the promotion policy. The first policy we are going to create is for promoting an image that has passed a scan with zero (0) **Critical** vulnerabilities. The policy will target the `ci`/`dc_18` repository.
 
-1. Navigate to the `admin`/`alpine_build` repository. Click `Promotions` and click `New promotion policy`.
+1. Navigate to the `ci`/`dc18_build` repository. Click `Promotions` and click `New promotion policy`.
+  ![](img/create_policy.jpg)
+
 2. In the `PROMOTE TO TARGET IF...` box select `Critical Vulnerabilities` and then check `equals`. In the box below `equals` enter the number zero (0) and click `Add`.
-3. Set the `TARGET REPOSITORY` to `admin`/`alpine` and click `Save & Apply`.
+3. Set the `TARGET REPOSITORY` to `ci`/`dc18` and click `Save & Apply`.
   ![](img/promo_policy.jpg)
 
- Perfect. Now let's push am image that will be scanned and promoted.
-
-### <a name="task4.2"></a>Task 4.2: Create Promotion Policy - Private to Hub.docker.com
+When we push an image to `ci`/`dc18_build` it will get scanned. Based on that scan report we could see the image moved to `ci`/`dc18`. Lets push a few images to see if it worked. 
 
 ## <a name="task5"></a>Task 5: Pull / Tag / Push Docker Image
 Lets pull, tag, and push a few images to YOUR DTR. 
