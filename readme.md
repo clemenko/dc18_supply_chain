@@ -451,23 +451,20 @@ In order to automate we need to deploy Jenkins. If you want I can point you to a
 3.  Pay attention to the url AND Jenkins password. It will look like : 
 
 	```
-	*************************************************************
-	*************************************************************
-	*************************************************************
+	[worker3] (local) root@10.20.0.25 ~/
+	$ dc18_supply_chain/scripts/jenkins.sh
+	=========================================================================================================
 
-	Jenkins initial setup is required. An admin user has been created and a password generated.
-	Please use the following password to proceed to installation:
+	  Jenkins URL : http://ip172-18-0-20-bcelih5dffhg00b2thog.direct.ee-beta2.play-with-docker.com:8080
+  
+	=========================================================================================================
+	  Waiting for Jenkins to start................
+	=========================================================================================================
+	
+	  Jenkins Setup Password = d32eda1cf2464b818826fd82b4f7c2cb
 
-	6b0ae958df90428d9aaffe17c88353d2
-
-	This may also be found at: /var/jenkins_home/secrets/initialAdminPassword
-
-	*************************************************************
-	*************************************************************
-	*************************************************************
+	=========================================================================================================
 	```
-
-   The `6b0ae9....` is the one you want. 
 
 4. Now navigate to http://$DOCS_URL:8080 and start the setup of Jenkins and enter the password. It may take a minute or two for the `Unlock Jenkins` page to load. Be patient. 
 	![](img/jenkins_token.jpg)
