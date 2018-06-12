@@ -100,7 +100,7 @@ git clone https://github.com/clemenko/dc18_supply_chain.git
 Once cloned, now we can run the `var_setup.sh` script.
 
 ```
-. dc18_supply_chain/var_setup.sh
+. dc18_supply_chain/scripts/var_setup.sh
 ```
 
 Now your PWD environment variables are setup. We will use the variables for some scripting.
@@ -189,14 +189,14 @@ Either way we need to create two repositories, `dc18_build` and `dc18`. `dc18_bu
 Since we used `git clone` to copy the repository to `worker3` for this workshop, there is a script from that will create the DTR repositories.
 
 ```
-./dc18_supply_chain/create_repos.sh
+./dc18_supply_chain/scripts/create_repos.sh
 ```
 
 Feel free to `cat` the file to see how we are using `curl` and the API to create the repositories.
 
 ```
 [worker3] (local) root@10.20.0.38 ~
-$ cat dc18_supply_chain/create_repos.sh
+$ cat dc18_supply_chain/scripts/create_repos.sh
 #!/bin/bash
 # requires environment variables: DTR_HOST, DTR_USERNAME and DTR_TOKEN
 
