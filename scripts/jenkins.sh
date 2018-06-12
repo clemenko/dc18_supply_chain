@@ -11,8 +11,11 @@ jenkins_id=$(docker run -d -p 8080:8080 -v /var/run/docker.sock:/var/run/docker.
 echo "============================================================================================================"
 echo "  Jenkins URL : http://$DOCS_URL:8080"
 echo "============================================================================================================"
-echo " Waiting for Jenkins to start... "
-sleep 15
+
+echo -n " Waiting for Jenkins to start. "
+for i in {1..15}; do echo -n "."; sleep 1; done
+echo ""
+
 echo "============================================================================================================"
 echo ""
 echo "  Jenkins Setup Password = "$(docker exec $jenkins_id cat /var/jenkins_home/secrets/initialAdminPassword)
