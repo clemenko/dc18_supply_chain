@@ -6,7 +6,7 @@ if [ -z ${DOCS_URL+x} ]; then
   . ~/dc18_supply_chain/scripts/var_setup.sh
 fi
 
-docker run -d -p 8080:8080 -v /var/run/docker.sock:/var/run/docker.sock clemenko/dc18:jenkins
+jenkins_id=$(docker run -d -p 8080:8080 -v /var/run/docker.sock:/var/run/docker.sock clemenko/dc18:jenkins)
 
 echo "============================================================================================================"
 echo "  Jenkins URL : http://$DOCS_URL:8080"
@@ -15,6 +15,6 @@ echo " Waiting for Jenkins to start... "
 sleep 10
 echo "============================================================================================================"
 echo ""
-echo "  Jenkins Setup Password = "$(docker exec $(docker ps|grep jenkins|awk '{print $1}') cat /var/jenkins_home/secrets/initialAdminPassword)
+echo "  Jenkins Setup Password = "$(docker exec $jenkins_id cat /var/jenkins_home/secrets/initialAdminPassword)
 echo ""
 echo "============================================================================================================"
