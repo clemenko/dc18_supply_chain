@@ -1,0 +1,25 @@
+version: "3.1"
+services:
+  jenkins:
+    image: superjenkins
+    networks:
+      jenkins:
+    volumes:
+      - /root/jenkins/data/:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /root/jenkins/ssh/:/root/.ssh/
+      - /root/.docker/:/root/.docker/
+
+  nginx:
+    image: nginx:alpine
+    networks:
+      jenkins:
+    volumes:
+      - /root/jenkins/nginx.conf:/etc/nginx/nginx.conf
+      - /root/jenkins/certs/:/certs/
+    ports:
+      - 443:443
+      - 80:80
+
+networks:
+  jenkins:
