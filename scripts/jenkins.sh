@@ -7,6 +7,7 @@ if [ -z ${DOCS_URL+x} ]; then
 fi
 
 jenkins_id=$(docker run -d -p 8080:8080 -v /var/run/docker.sock:/var/run/docker.sock clemenko/dc18:jenkins)
+echo $jenkins_id > jenkins.id
 
 echo "========================================================================================================="
 echo ""
@@ -15,7 +16,7 @@ echo ""
 echo "========================================================================================================="
 
 echo -n "  Waiting for Jenkins to start."
-for i in {1..15}; do echo -n "."; sleep 1; done
+for i in {1..20}; do echo -n "."; sleep 1; done
 echo ""
 
 echo "========================================================================================================="

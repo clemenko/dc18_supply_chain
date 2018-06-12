@@ -447,8 +447,18 @@ In order to automate we need to deploy Jenkins. If you want I can point you to a
 
 ### <a name="task9.1"></a>Task 9.1: Deploy Jenkins
 
-1.  Cat `dc18_supply_chain/scripts/jenkins.sh`. And take a look at the script. Also notice the script will check variables, and then runs `docker run`.
-2.  Then run `dc18_supply_chain/scripts/jenkins.sh`
+1.  Take a look at the script. Also notice the script will check variables, and then runs `docker run`.
+
+	```
+	cat ./dc18_supply_chain/scripts/jenkins.sh
+	```
+
+2.  Then run 
+
+	```
+	./dc18_supply_chain/scripts/jenkins.sh
+	```
+	
 3.  Pay attention to the url AND Jenkins password. It will look like : 
 
 	```
@@ -467,7 +477,7 @@ In order to automate we need to deploy Jenkins. If you want I can point you to a
 	=========================================================================================================
 	```
 
-4. Now navigate to http://$DOCS_URL:8080 by clicking on the url in the terminal. Let's start the setup of Jenkins and enter the password. It may take a minute or two for the `Unlock Jenkins` page to load. Be patient. 
+4. Now navigate to `http://$DOCS_URL:8080` by clicking on the url in the terminal. Let's start the setup of Jenkins and enter the password. It may take a minute or two for the `Unlock Jenkins` page to load. Be patient. 
 	![](img/jenkins_token.jpg)
 
 5. Click `Select plugins to install`. 
@@ -500,7 +510,9 @@ Now that we have Jenkins setup and running we can create our first "Item" or job
 	![](img/jenkins_build.jpg)
 
 4. You will now see a text box. Past the following build script into the text box. 
-	**Please replace the <DTR_URL> with your URL!**
+
+
+	**Please replace the <DTR_URL> with your URL! `echo $DTR_URL` <-- `worker3`** 
 	
 	```
 	DTR_USERNAME=admin
@@ -508,22 +520,13 @@ Now that we have Jenkins setup and running we can create our first "Item" or job
 
 	docker login -u admin -p admin1234 $DTR_URL
 
-	docker pull clemenko/dc18:0.1
 	docker pull clemenko/dc18:0.2
-	docker pull clemenko/dc18:0.3
-	docker pull alpine
 
-	docker tag clemenko/dc18:0.1 $DTR_URL/ci/dc18_build:jenkins_0.1
-	docker tag clemenko/dc18:0.2 $DTR_URL/ci/dc18_build:jenkins_0.2
-	docker tag clemenko/dc18:0.3 $DTR_URL/ci/dc18_build:jenkins_0.3
-	docker tag alpine $DTR_URL/ci/dc18_build:jenkins_alpine
+	docker tag clemenko/dc18:0.2 $DTR_URL/ci/dc18_build:jenkins_$BUILD_NUMBER
 
-	docker push $DTR_URL/ci/dc18_build:jenkins_0.1
-	docker push $DTR_URL/ci/dc18_build:jenkins_0.2
-	docker push $DTR_URL/ci/dc18_build:jenkins_0.3
-	docker push $DTR_URL/ci/dc18_build:jenkins_alpine
+	docker push $DTR_URL/ci/dc18_build:jenkins_$BUILD_NUMBER
 
-	docker rmi $DTR_URL/ci/dc18_build:jenkins_alpine $DTR_URL/ci/dc18_build:jenkins_0.1 $DTR_URL/ci/dc18_build:jenkins_0.2 $DTR_URL/ci/dc18_build:jenkins_0.3 alpine clemenko/dc18:0.3 clemenko/dc18:0.1 clemenko/dc18:0.2
+	docker rmi clemenko/dc18:0.1 clemenko/dc18:0.2 $DTR_URL/ci/dc18_build:jenkins_$BUILD_NUMBER
 	```
 	
 	It will look very similar to:
@@ -534,7 +537,29 @@ Now that we have Jenkins setup and running we can create our first "Item" or job
 5. Now let's run the build. Click `Build now`. 
 	![](img/jenkins_buildnow.jpg)
 
-### <a name="task9.2"></a>Task 9.2: Plumb Jenkins
+6. You can watch the output of the `Build` by clicking on the task number in the `Build History` and then selecting `Build Output`
+	![](img/jenkins_bhistory.jpg)
+	
+7. The console output will show you all the details from the script execution. 
+	![](img/jenkins_output.jpg)
+	
+8. Review the `ci`/`dc18` repository in DTR. You should now see a bunch of tags that have been promoted. 
+	![](img/automated_supply.jpg)
+
+### <a name="task9.2"></a>Task 9.2: Webhooks
+Now that we have Jenkins setup we can extend with webhooks. In Jenkins speak a webhook is simply a build trigger. Let's configure one. 
+
+1. Navigate to Jenkins and click on the project/item called `ci_dc18` and click on `Configure` on the left hand side. 
+	![](img/jenkins_configure.jpg)
+
+2. Then scroll down to `Build Triggers`. Check the radio button for `Trigger builds remotely` and enter an Authentication Token of `dc18_rocks`.  Scroll down and click `Save`. 
+	![](img/jenkins_triggers.jpg)
+	
+3. Now in your browser goto YOUR `http://$DOCS_URL:8080/job/ci_dc18/build?token=dc18_rocks`
+	
+	It should look like: `http://ip172-18-0-6-bcg2h0npobfg00c4nrb0.direct.ee-beta2.play-with-docker.com:8080/job/ci_dc18/build?token=dc18_rocks`
+	
+
 
 ## <a name="Conclusion"></a>Conclusion
 In this lab we been able to leverage the power of Docker Enterprise Edition for creating and using secrets. We also were able to create the foundation of a secure supply chain with Docker Image Scanning and Docker Content Trust.
