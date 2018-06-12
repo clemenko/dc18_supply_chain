@@ -11,7 +11,7 @@ curl -X POST -k -L \
   https://$DTR_URL/api/v0/repositories/ci \
   -H 'Content-Type: application/json' \
   -d '{
-  "enableManifestLists": true,
+  "enableManifestLists": false,
   "immutableTags": true,
   "longDescription": "",
   "name": "dc18",
@@ -25,7 +25,7 @@ curl -X POST -k -L \
   https://$DTR_URL/api/v0/repositories/ci \
   -H 'Content-Type: application/json' \
   -d '{
-  "enableManifestLists": true,
+  "enableManifestLists": false,
   "immutableTags": true,
   "longDescription": "",
   "name": "dc18_build",

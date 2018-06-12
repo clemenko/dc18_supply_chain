@@ -443,5 +443,22 @@ Again please use the same password. It will simplify this part of the workshop.
 
 ## <a name="task9"></a>Task 9: Automate with Jenkins
 
+
+Jenkins Build Shell : 
+
+```
+DTR_USERNAME=admin
+DTR_URL=ip172-18-0-27-bcdb5fddffhg00b2o6ug.direct.ee-beta2.play-with-docker.com
+
+docker login -u admin -p admin1234 $DTR_URL
+
+docker pull alpine
+docker tag alpine $DTR_URL/admin/dc18:alpine
+docker push $DTR_URL/admin/dc18:alpine
+
+docker rmi $DTR_URL/admin/dc18:alpine alpine
+```
+
+
 ## <a name="Conclusion"></a>Conclusion
 In this lab we been able to leverage the power of Docker Enterprise Edition for creating and using secrets. We also were able to create the foundation of a secure supply chain with Docker Image Scanning and Docker Content Trust.
