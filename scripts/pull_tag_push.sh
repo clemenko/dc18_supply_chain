@@ -28,3 +28,5 @@ docker push $DTR_URL/ci/dc18_build:0.1
 docker push $DTR_URL/ci/dc18_build:0.2
 docker push $DTR_URL/ci/dc18_build:0.3
 docker push $DTR_URL/ci/dc18_build:alpine
+
+echo ""

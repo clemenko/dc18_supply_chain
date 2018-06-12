@@ -29,6 +29,7 @@ In this lab you will integrate Docker Enterpise Edition Advanced in to your deve
 > * [Task 9: Automate with Jenkins ](#task9)
 >   * [Task 9.1: Deploy Jenkins](#task9.1)
 >   * [Task 9.2: Plumb Jenkins](#task9.2)
+>   * [Task 9.3: Webhooks](#task9.3)
 > * [Conclusion](#conclusion)
 
 ## Document conventions
@@ -466,7 +467,7 @@ In order to automate we need to deploy Jenkins. If you want I can point you to a
 	=========================================================================================================
 	```
 
-4. Now navigate to http://$DOCS_URL:8080 and start the setup of Jenkins and enter the password. It may take a minute or two for the `Unlock Jenkins` page to load. Be patient. 
+4. Now navigate to http://$DOCS_URL:8080 by clicking on the url in the terminal. Let's start the setup of Jenkins and enter the password. It may take a minute or two for the `Unlock Jenkins` page to load. Be patient. 
 	![](img/jenkins_token.jpg)
 
 5. Click `Select plugins to install`. 
@@ -475,29 +476,65 @@ In order to automate we need to deploy Jenkins. If you want I can point you to a
 6. We don't need to install ANY plugins. Click `none` at the top.
 	![](img/jenkins_none.jpg)
 	
+7. Next Click `Continue as admin` in the lower right hand corner. We don't need to create another username for Jenkins. 
+	![](img/jenkins_continue.jpg)
+	
+8. Next for Instance Configuration click `Save and Finish`. 
+	![](img/jenkins_instance.jpg)
+	
+9. And we are done installing Jenkins. Click `Start using Jenkins`
+	![](img/jenkins_finish.jpg)
 	
 	
 	
 ### <a name="task9.2"></a>Task 9.2: Plumb Jenkins
+Now that we have Jenkins setup and running we can create our first "Item" or job. 
 
+1. Click on `New item` in the upper left. 
+	![](img/jenkins_newitem.jpg)
 
+2. Since we didn't install any plugins we should only see a `Freestyle project`. Enter a name like `ci_dc18`, click `Freestyle project` and then click `OK`.
+	![](img/jenkins_item.jpg)
 
-Jenkins Build Shell : 
+3. Let's scroll down to the `Build` section. We will come back to the `Build Triggers` section in a bit. Now click `Add build step` --> `Execute shell`. 
+	![](img/jenkins_build.jpg)
 
-```
-DTR_USERNAME=admin
-DTR_URL=ip172-18-0-27-bcdb5fddffhg00b2o6ug.direct.ee-beta2.play-with-docker.com
+4. You will now see a text box. Past the following build script into the text box. 
+	**Please replace the <DTR_URL> with your URL!**
+	
+	```
+	DTR_USERNAME=admin
+	DTR_URL=<DTR_URL>
 
-docker login -u admin -p admin1234 $DTR_URL
+	docker login -u admin -p admin1234 $DTR_URL
 
-docker pull alpine
-docker tag alpine $DTR_URL/admin/dc18:alpine
-docker push $DTR_URL/admin/dc18:alpine
+	docker pull clemenko/dc18:0.1
+	docker pull clemenko/dc18:0.2
+	docker pull clemenko/dc18:0.3
+	docker pull alpine
 
-docker rmi $DTR_URL/admin/dc18:alpine alpine
-```
+	docker tag clemenko/dc18:0.1 $DTR_URL/ci/dc18_build:jenkins_0.1
+	docker tag clemenko/dc18:0.2 $DTR_URL/ci/dc18_build:jenkins_0.2
+	docker tag clemenko/dc18:0.3 $DTR_URL/ci/dc18_build:jenkins_0.3
+	docker tag alpine $DTR_URL/ci/dc18_build:jenkins_alpine
 
+	docker push $DTR_URL/ci/dc18_build:jenkins_0.1
+	docker push $DTR_URL/ci/dc18_build:jenkins_0.2
+	docker push $DTR_URL/ci/dc18_build:jenkins_0.3
+	docker push $DTR_URL/ci/dc18_build:jenkins_alpine
 
+	docker rmi $DTR_URL/ci/dc18_build:jenkins_alpine $DTR_URL/ci/dc18_build:jenkins_0.1 $DTR_URL/ci/dc18_build:jenkins_0.2 $DTR_URL/ci/dc18_build:jenkins_0.3 alpine clemenko/dc18:0.3 clemenko/dc18:0.1 clemenko/dc18:0.2
+	```
+	
+	It will look very similar to:
+	![](img/jenkins_build2.jpg)
+	
+	Now scroll down and click `Save`. 
+	
+5. Now let's run the build. Click `Build now`. 
+	![](img/jenkins_buildnow.jpg)
+
+### <a name="task9.2"></a>Task 9.2: Plumb Jenkins
 
 ## <a name="Conclusion"></a>Conclusion
 In this lab we been able to leverage the power of Docker Enterprise Edition for creating and using secrets. We also were able to create the foundation of a secure supply chain with Docker Image Scanning and Docker Content Trust.

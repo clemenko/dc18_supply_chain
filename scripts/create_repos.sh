@@ -33,3 +33,5 @@ curl -X POST -k -L \
   "shortDescription": "Dockercon 2018 Example - private",
   "visibility": "private"
 }'
+
+echo ""

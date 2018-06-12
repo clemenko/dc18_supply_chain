@@ -9,3 +9,5 @@ fi
 AUTHTOKEN=$(curl -sk -d '{"username":"admin","password":"admin1234"}' https://$UCP_URL/auth/login | jq -r .auth_token)
 curl -sk -H "Authorization: Bearer $AUTHTOKEN" https://$UCP_URL/api/clientbundle -o bundle.zip
 unzip bundle.zip > /dev/null 2>&1
+
+echo ""

@@ -17,3 +17,5 @@ curl -X POST -sk -L \
   "tagTemplate": "%n",
   "targetRepository": "ci/dc18"
 }'
+
+echo ""
