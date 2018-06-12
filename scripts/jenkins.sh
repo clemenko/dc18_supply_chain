@@ -12,7 +12,7 @@ echo "==========================================================================
 echo "  Jenkins URL : http://$DOCS_URL:8080"
 echo "============================================================================================================"
 echo " Waiting for Jenkins to start... "
-sleep 10
+sleep 15
 echo "============================================================================================================"
 echo ""
 echo "  Jenkins Setup Password = "$(docker exec $jenkins_id cat /var/jenkins_home/secrets/initialAdminPassword)
