@@ -442,6 +442,47 @@ Again please use the same password. It will simplify this part of the workshop.
 
 
 ## <a name="task9"></a>Task 9: Automate with Jenkins
+In order to automate we need to deploy Jenkins. If you want I can point you to a few Docker Compose yamls. OR we have the easy way. The easy, aka script, deploys Jenkins as a `docker stack deploy`. 
+
+### <a name="task9.1"></a>Task 9.1: Deploy Jenkins
+
+1.  Cat `dc18_supply_chain/scripts/jenkins.sh`. And take a look at the script. Also notice the script will check variables, and then runs `docker run`.
+2.  Then run `dc18_supply_chain/scripts/jenkins.sh`
+3.  Pay attention to the url AND Jenkins password. It will look like : 
+
+	```
+	*************************************************************
+	*************************************************************
+	*************************************************************
+
+	Jenkins initial setup is required. An admin user has been created and a password generated.
+	Please use the following password to proceed to installation:
+
+	6b0ae958df90428d9aaffe17c88353d2
+
+	This may also be found at: /var/jenkins_home/secrets/initialAdminPassword
+
+	*************************************************************
+	*************************************************************
+	*************************************************************
+	```
+
+   The `6b0ae9....` is the one you want. 
+
+4. Now navigate to http://$DOCS_URL:8080 and start the setup of Jenkins and enter the password. It may take a minute or two for the `Unlock Jenkins` page to load. Be patient. 
+	![](img/jenkins_token.jpg)
+
+5. Click `Select plugins to install`. 
+	![](img/jenkins_plugins1.jpg)
+	
+6. We don't need to install ANY plugins. Click `none` at the top.
+	![](img/jenkins_none.jpg)
+	
+	
+	
+	
+### <a name="task9.2"></a>Task 9.2: Plumb Jenkins
+
 
 
 Jenkins Build Shell : 
@@ -458,6 +499,7 @@ docker push $DTR_URL/admin/dc18:alpine
 
 docker rmi $DTR_URL/admin/dc18:alpine alpine
 ```
+
 
 
 ## <a name="Conclusion"></a>Conclusion
