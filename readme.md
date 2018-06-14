@@ -562,4 +562,4 @@ Now that we have Jenkins setup we can extend with webhooks. In Jenkins speak a w
 
 
 ## <a name="Conclusion"></a>Conclusion
-In this lab we been able to leverage the power of Docker Enterprise Edition for creating and using secrets. We also were able to create the foundation of a secure supply chain with Docker Image Scanning and Docker Content Trust.
+In this workshop we were able to start deploying the basics of an Automated Secure Supply Chain. Hopefully with this foundation you can build your own organizations Secure Supply Chain!
