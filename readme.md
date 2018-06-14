@@ -293,10 +293,10 @@ docker pull alpine
 6. Now let's tag the image for our DTR instance. We will use the `URL` variable we set before.
 
    ```
-docker tag clemenko/dc18:0.1 $DTR_URL/ci/dc18_build:0.1
-docker tag clemenko/dc18:0.2 $DTR_URL/ci/dc18_build:0.2
-docker tag clemenko/dc18:0.3 $DTR_URL/ci/dc18_build:0.3
-docker tag alpine $DTR_URL/ci/dc18_build:alpine
+	docker tag clemenko/dc18:0.1 $DTR_URL/ci/dc18_build:0.1
+	docker tag clemenko/dc18:0.2 $DTR_URL/ci/dc18_build:0.2
+	docker tag clemenko/dc18:0.3 $DTR_URL/ci/dc18_build:0.3
+	docker tag alpine $DTR_URL/ci/dc18_build:alpine
    ```
 
 7. Now we can `docker push` the images to DTR.
