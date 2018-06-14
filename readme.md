@@ -291,7 +291,6 @@ docker pull alpine
   This command is pull a few images from [hub.docker.com](https://hub.docker.com).
 
 6. Now let's tag the image for our DTR instance. We will use the `URL` variable we set before.
-   The tag command looks like `docker image tag <FROM> <TO>`.
 
    ```
 docker tag clemenko/dc18:0.1 $DTR_URL/ci/dc18_build:0.1
