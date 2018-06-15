@@ -284,31 +284,32 @@ In order to push and pull images to DTR we will need to take advantage of PWD's 
 	
 5. Now we can start pulling a few images.
 
-  ```
-docker pull clemenko/dc18:0.1
-docker pull clemenko/dc18:0.2
-docker pull clemenko/dc18:0.3
-docker pull alpine
-  ```
+	  ```
+	docker pull clemenko/dc18:0.1
+	docker pull clemenko/dc18:0.2
+	docker pull clemenko/dc18:0.3
+	docker pull alpine
+	  ```
+	  
   This command is pull a few images from [hub.docker.com](https://hub.docker.com).
 
 6. Now let's tag the image for our DTR instance. We will use the `URL` variable we set before.
 
-   ```
-   docker tag clemenko/dc18:0.1 $DTR_URL/ci/dc18_build:0.1
-   docker tag clemenko/dc18:0.2 $DTR_URL/ci/dc18_build:0.2
-   docker tag clemenko/dc18:0.3 $DTR_URL/ci/dc18_build:0.3
-   docker tag alpine $DTR_URL/ci/dc18_build:alpine
-   ```
+	   ```
+	   docker tag clemenko/dc18:0.1 $DTR_URL/ci/dc18_build:0.1
+	   docker tag clemenko/dc18:0.2 $DTR_URL/ci/dc18_build:0.2
+	   docker tag clemenko/dc18:0.3 $DTR_URL/ci/dc18_build:0.3
+	   docker tag alpine $DTR_URL/ci/dc18_build:alpine
+	   ```
 
 7. Now we can `docker push` the images to DTR.
 
-  ```
-docker push $DTR_URL/ci/dc18_build:0.1
-docker push $DTR_URL/ci/dc18_build:0.2
-docker push $DTR_URL/ci/dc18_build:0.3
-docker push $DTR_URL/ci/dc18_build:alpine
-  ```
+	  ```
+	docker push $DTR_URL/ci/dc18_build:0.1
+	docker push $DTR_URL/ci/dc18_build:0.2
+	docker push $DTR_URL/ci/dc18_build:0.3
+	docker push $DTR_URL/ci/dc18_build:alpine
+	  ```
 
 ## <a name="task6"></a>Task 6: Review Scan Results
 Lets take a good look at the scan results from the images. Please keep in mind this will take a few minutes to complete. 
