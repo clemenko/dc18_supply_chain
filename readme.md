@@ -341,14 +341,13 @@ Lets take a good look at the scan results from the images. Please keep in mind t
 ### <a name="task6.1"></a>Task 6.1: Hide Vulnerabilities
 If we find that they CVE is a false positive. Meaning that it might be disputed, or from OS that you are not using. If this is the case we can simply `hide` the image. This will not remove the fact that the CVE was hidden. 
 
-1. Click `hide` for the two CVEs. 
+Click `hide` for the two CVEs. 
 	![](img/cve_hide.jpg)
 
-       If we click back to `Images` we can now see that the image is clean. 
+If we click back to `Images` we can now see that the image is clean. 
+	![](img/cve_clean.jpg)
        
-       ![](img/cve_clean.jpg)
-       
-       Once we have hidden some CVEs we might want to perform a manual promotion of the image. 
+Once we have hidden some CVEs we might want to perform a manual promotion of the image. 
        
 ### <a name="task6.2"></a>Task 6.2: Manually Promote Image
 Manual promotions are useful for those times that you need to move an image from a `Private` repository to a `Public` one. To perform a manual promotion : 
