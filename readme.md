@@ -269,17 +269,19 @@ In order to push and pull images to DTR we will need to take advantage of PWD's 
 2. Click on `worker3`. 
 3. In the console we should already have a variable called `DTR_URL`. Lets check. 
 
-  ```
-  echo $DTR_URL
-  ```
+	```
+	echo $DTR_URL
+	```
+	
   If you are not sure please follow [Task 1.1: Set Up Environment Variables](#task1.1). 
   
 
 4. Now we login to our DTR server using your `DTR_TOKEN` from [Task 3.3: Create Jenkins DTR Token](#task3.3).
 
-   ```
-   docker login -u jenkins -p $DTR_TOKEN $DTR_URL
-   ```
+	```
+	docker login -u jenkins -p $DTR_TOKEN $DTR_URL
+	```
+	
 5. Now we can start pulling a few images.
 
   ```
@@ -293,10 +295,10 @@ docker pull alpine
 6. Now let's tag the image for our DTR instance. We will use the `URL` variable we set before.
 
    ```
-	docker tag clemenko/dc18:0.1 $DTR_URL/ci/dc18_build:0.1
-	docker tag clemenko/dc18:0.2 $DTR_URL/ci/dc18_build:0.2
-	docker tag clemenko/dc18:0.3 $DTR_URL/ci/dc18_build:0.3
-	docker tag alpine $DTR_URL/ci/dc18_build:alpine
+   docker tag clemenko/dc18:0.1 $DTR_URL/ci/dc18_build:0.1
+   docker tag clemenko/dc18:0.2 $DTR_URL/ci/dc18_build:0.2
+   docker tag clemenko/dc18:0.3 $DTR_URL/ci/dc18_build:0.3
+   docker tag alpine $DTR_URL/ci/dc18_build:alpine
    ```
 
 7. Now we can `docker push` the images to DTR.
