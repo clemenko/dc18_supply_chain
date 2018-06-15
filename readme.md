@@ -417,26 +417,26 @@ Let's sign our first Docker image?
 
     Here is an example output:
 
-		```
-		[worker3] (local) root@10.20.0.32 ~/dc18_supply_chain
-		$ docker push $DTR_URL/ci/dc18:signed
-		The push refers to a repository [ip172-18-0-24-bcd8s0ddffhg00b2o320.direct.ee-beta2.play-with-docker.com/ci/dc18]
-		cd7100a72410: Mounted from ci/dc18
-		signed: digest: sha256:8c03bb07a531c53ad7d0f6e7041b64d81f99c6e493cb39abba56d956b40eacbc size: 528
-		Signing and pushing trust metadata
-		You are about to create a new root signing key passphrase. This passphrase
-		will be used to protect the most sensitive key in your signing system. Please
-		choose a long, complex passphrase and be careful to keep the password and the
-		key file itself secure and backed up. It is highly recommended that you use a
-		password manager to generate the passphrase and keep it safe. There will be no
-		way to recover this key. You can find the key in your config directory.
-		Enter passphrase for new root key with ID baf4f85:
-		Repeat passphrase for new root key with ID baf4f85:
-		Enter passphrase for new repository key with ID 8688152 (ip172-18-0-24-bcd8s0ddffhg00b2o320.direct.ee-beta2.play-with-docker.com/ci/dc18):
-		Repeat passphrase for new repository key with ID 8688152 (ip172-18-0-24-bcd8s0ddffhg00b2o320.direct.ee-beta2.play-with-docker.com/ci/dc18):
-		Finished initializing "ip172-18-0-24-bcd8s0ddffhg00b2o320.direct.ee-beta2.play-with-docker.com/ci/dc18"
-		Successfully signed "ip172-18-0-24-bcd8s0ddffhg00b2o320.direct.ee-beta2.play-with-docker.com/ci/dc18":signed
-		```
+	```
+	[worker3] (local) root@10.20.0.32 ~/dc18_supply_chain
+	$ docker push $DTR_URL/ci/dc18:signed
+	The push refers to a repository [ip172-18-0-24-bcd8s0ddffhg00b2o320.direct.ee-beta2.play-with-docker.com/ci/dc18]
+	cd7100a72410: Mounted from ci/dc18
+	signed: digest: sha256:8c03bb07a531c53ad7d0f6e7041b64d81f99c6e493cb39abba56d956b40eacbc size: 528
+	Signing and pushing trust metadata
+	You are about to create a new root signing key passphrase. This passphrase
+	will be used to protect the most sensitive key in your signing system. Please
+	choose a long, complex passphrase and be careful to keep the password and the
+	key file itself secure and backed up. It is highly recommended that you use a
+	password manager to generate the passphrase and keep it safe. There will be no
+	way to recover this key. You can find the key in your config directory.
+	Enter passphrase for new root key with ID baf4f85:
+	Repeat passphrase for new root key with ID baf4f85:
+	Enter passphrase for new repository key with ID 8688152 (ip172-18-0-24-bcd8s0ddffhg00b2o320.direct.ee-beta2.play-with-docker.com/ci/dc18):
+	Repeat passphrase for new repository key with ID 8688152 (ip172-18-0-24-bcd8s0ddffhg00b2o320.direct.ee-beta2.play-with-docker.com/ci/dc18):
+	Finished initializing "ip172-18-0-24-bcd8s0ddffhg00b2o320.direct.ee-beta2.play-with-docker.com/ci/dc18"
+	Successfully signed "ip172-18-0-24-bcd8s0ddffhg00b2o320.direct.ee-beta2.play-with-docker.com/ci/dc18":signed
+	```
 
 Again please use the same password. It will simplify this part of the workshop.
 
