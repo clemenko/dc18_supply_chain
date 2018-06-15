@@ -342,8 +342,7 @@ Lets take a good look at the scan results from the images. Please keep in mind t
 If we find that they CVE is a false positive. Meaning that it might be disputed, or from OS that you are not using. If this is the case we can simply `hide` the image. This will not remove the fact that the CVE was hidden. 
 
 1. Click `hide` for the two CVEs. 
-
-       ![](img/cve_hide.jpg)
+	![](img/cve_hide.jpg)
 
        If we click back to `Images` we can now see that the image is clean. 
        
