@@ -417,7 +417,7 @@ Let's sign our first Docker image?
     
     Here is an example output:
     
-    ```
+```
 [worker3] (local) root@10.20.0.32 ~/dc18_supply_chain
 $ docker push $DTR_URL/ci/dc18:signed
 The push refers to a repository [ip172-18-0-24-bcd8s0ddffhg00b2o320.direct.ee-beta2.play-with-docker.com/ci/dc18]
@@ -443,7 +443,7 @@ Again please use the same password. It will simplify this part of the workshop.
 
 
 ## <a name="task9"></a>Task 9: Automate with Jenkins
-In order to automate we need to deploy Jenkins. If you want I can point you to a few Docker Compose yamls. OR we have the easy way. The easy, aka script, deploys Jenkins as a `docker stack deploy`. 
+In order to automate we need to deploy Jenkins. If you want I can point you to a few Docker Compose yamls. OR we have the easy way. The easy, aka script, deploys Jenkins quickly.
 
 ### <a name="task9.1"></a>Task 9.1: Deploy Jenkins
 
@@ -453,9 +453,10 @@ In order to automate we need to deploy Jenkins. If you want I can point you to a
 	cat ./dc18_supply_chain/scripts/jenkins.sh
 	```
 
-2.  Then run 
+2.  Then run unset Docker Content Trust and instal Jenkins.
 
 	```
+      export DOCKER_CONTENT_TRUST=0
 	./dc18_supply_chain/scripts/jenkins.sh
 	```
 	
