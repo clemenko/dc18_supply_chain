@@ -5,8 +5,5 @@ services:
     deploy:
       replicas: 6
       mode: replicated
-      placement:
-        constraints:
-          - 'node.role == worker'
     ports:
       - 5000:5000
