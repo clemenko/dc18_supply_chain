@@ -517,7 +517,7 @@ In order to automate we need to deploy Jenkins. If you want I can point you to a
 2.  Then run unset Docker Content Trust and instal Jenkins.
 
 	```
-      export DOCKER_CONTENT_TRUST=0
+  export DOCKER_CONTENT_TRUST=0
 	./dc18_supply_chain/scripts/jenkins.sh
 	```
 
@@ -542,37 +542,37 @@ In order to automate we need to deploy Jenkins. If you want I can point you to a
 4. Now navigate to `http://$DOCS_URL:8080` by clicking on the url in the terminal. Let's start the setup of Jenkins and enter the password. It may take a minute or two for the `Unlock Jenkins` page to load. Be patient.
 	![](img/jenkins_token.jpg)
 
-5. Click `Select plugins to install`.
+5. Click `Install suggested plugins`.
 	![](img/jenkins_plugins1.jpg)
 
-6. We don't need to install ANY plugins. Click `none` at the top.
-	![](img/jenkins_none.jpg)
-
-7. Next Click `Continue as admin` in the lower right hand corner. We don't need to create another username for Jenkins.
+6. Next Click `Continue as admin` in the lower right hand corner. We don't need to create another username for Jenkins.
 	![](img/jenkins_continue.jpg)
 
-8. Next for Instance Configuration click `Save and Finish`.
+7. Next for Instance Configuration click `Save and Finish`.
 	![](img/jenkins_instance.jpg)
 
-9. And we are done installing Jenkins. Click `Start using Jenkins`
+8. And we are done installing Jenkins. Click `Start using Jenkins`
 	![](img/jenkins_finish.jpg)
 
 
 
 ### <a name="task9.2"></a>Task 9.2: Plumb Jenkins
-Now that we have Jenkins setup and running we can create our first "Item" or job.
+Now that we have Jenkins setup and running we need to add 2 additional plugins - Blue Ocean and Generic Webhook Trigger:
 
-1. Click on `New item` in the upper left.
+1. Click on `Manage Jenkins` --> `Manage Plugins` --> `Available` and filter/search for `Blue Ocean` and `Generic Webhook Trigger`. When you have found each one check the checkbox to the left of the plugin name to select for installation.
+
+2. Click on `Install without restart` and wait for the plugins to install. When all plugins have installed naviagte back to the Jenkins homepage.
+
+3. Click on `New item` in the upper left.
 	![](img/jenkins_newitem.jpg)
 
-2. Since we didn't install any plugins we should only see a `Freestyle project`. Enter a name like `ci_dc18`, click `Freestyle project` and then click `OK`.
+4. Enter a name like `ci_dc18`, click `Freestyle project` and then click `OK`.
 	![](img/jenkins_item.jpg)
 
-3. Let's scroll down to the `Build` section. We will come back to the `Build Triggers` section in a bit. Now click `Add build step` --> `Execute shell`.
+5. Let's scroll down to the `Build` section. We will come back to the `Build Triggers` section in a bit. Now click `Add build step` --> `Execute shell`.
 	![](img/jenkins_build.jpg)
 
-4. You will now see a text box. Past the following build script into the text box.
-
+6. You will now see a text box. Past the following build script into the text box.
 
 	**Please replace the <DTR_URL> with your URL! `echo $DTR_URL` <-- `worker3`**
 
@@ -596,16 +596,16 @@ Now that we have Jenkins setup and running we can create our first "Item" or job
 
 	Now scroll down and click `Save`.
 
-5. Now let's run the build. Click `Build now`.
+7. Now let's run the build. Click `Build now`.
 	![](img/jenkins_buildnow.jpg)
 
-6. You can watch the output of the `Build` by clicking on the task number in the `Build History` and then selecting `Build Output`
+8. You can watch the output of the `Build` by clicking on the task number in the `Build History` and then selecting `Build Output`
 	![](img/jenkins_bhistory.jpg)
 
-7. The console output will show you all the details from the script execution.
+9. The console output will show you all the details from the script execution.
 	![](img/jenkins_output.jpg)
 
-8. Review the `ci`/`dc18` repository in DTR. You should now see a bunch of tags that have been promoted.
+10. Review the `ci`/`dc18` repository in DTR. You should now see a bunch of tags that have been promoted.
 	![](img/automated_supply.jpg)
 
 ### <a name="task9.2"></a>Task 9.2: Webhooks
@@ -614,12 +614,12 @@ Now that we have Jenkins setup we can extend with webhooks. In Jenkins speak a w
 1. Navigate to Jenkins and click on the project/item called `ci_dc18` and click on `Configure` on the left hand side.
 	![](img/jenkins_configure.jpg)
 
-2. Then scroll down to `Build Triggers`. Check the radio button for `Trigger builds remotely` and enter an Authentication Token of `dc18_rocks`.  Scroll down and click `Save`.
+2. Then scroll down to `Build Triggers`. Check the radio button for `Generic Webhook Trigger` and enter a Token of `dc18_rocks`.  Scroll down and click `Save`.
 	![](img/jenkins_triggers.jpg)
 
-3. Now in your browser goto YOUR `http://$DOCS_URL:8080/job/ci_dc18/build?token=dc18_rocks`
+3. Now in your browser goto YOUR `http://$DOCS_URL:8080/generic-webhook-trigger/invoke?token=dc18_rocks`
 
-	It should look like: `http://ip172-18-0-6-bcg2h0npobfg00c4nrb0.direct.ee-beta2.play-with-docker.com:8080/job/ci_dc18/build?token=dc18_rocks`
+	It should look like: `http://ip172-18-0-6-bcg2h0npobfg00c4nrb0.direct.ee-beta2.play-with-docker.com:8080/generic-webhook-trigger/invoke?token=dc18_rocks`
 
 
 
