@@ -121,8 +121,8 @@ Before we create the repositories, let's start with enabling the Docker Image Sc
 2.  Navigate to `System`on the left pane, then `Security`.
 ![](img/system_scanning.jpg)
 
-3.  Select `Enable Scanning`. In the popup leave it in `Online` mode and select `Enable`. The CVE database will start downloading. This can take a few minutes. Please be patient for it to complete.
-    ![](img/scanning_enable.jpg)
+3.  Select `Enable Scanning`. Leave it in `Online` mode and select `Enable`. The CVE database will start downloading. This can take a few minutes. Please be patient for it to complete.
+![](img/scanning_enable.jpg)
 
 **You will notice the yellow banner while DTR is downloading the CVE database. It will take some time to download.**
 
@@ -242,16 +242,15 @@ curl -X POST -k -L \
 3. Click `Show advanced settings` and then click `On Push` under `SCAN ON PUSH`.  This will ensure that the CVE scan will start right after every push to this repository.  And turn on `IMMUTABILITY `. Then click `Create`.
 ![](img/new_repo.jpg)
 
-4. Now let's create the second repository in a similar fashion. Create a `Public` repository as `admin`/`alpine` with `SCAN ON PUSH` set to `On Push`.
-
-5. Repeat this for creating the `ci`/`dc18` `Public` repository with `SCAN ON PUSH` set to `On Push`.
-6. We should have two repositories now.
+4. Repeat this for creating the `ci`/`dc18` `Public` repository with `SCAN ON PUSH` set to `On Push`.
+5. We should have two repositories now.
     ![](img/repo_list.jpg)
 
 ### <a name="task4.1"></a>Task 4.1: Create Promotion Policy - Private to Public
 With the two repositories setup we can now define the promotion policy. The first policy we are going to create is for promoting an image that has passed a scan with zero (0) **Critical** vulnerabilities. The policy will target the `ci`/`dc_18` repository.
 
-1. Navigate to the `ci`/`dc18_build` repository. Click `Promotions` and click `New promotion policy`.
+1. Navigate to the `ci`/`dc18_build` repository. Click `Promotions` and click `New promotion policy`. Note: Make sure the `Is source` box is
+selected.
   ![](img/create_policy.jpg)
 
 2. In the `PROMOTE TO TARGET IF...` box select `Critical Vulnerabilities` and then check `equals`. In the box below `equals` enter the number zero (0) and click `Add`.
@@ -332,20 +331,20 @@ Lets take a good look at the scan results from the images. Please keep in mind t
 
     ![](img/image_comp.jpg)
 
-    Now we have a chance to review each vulnerability by clicking the CVE itself, example `CVE-2017-17522`. This will direct you to Mitre's site for CVEs.
+    Now we have a chance to review each vulnerability by clicking the CVE itself, example `CVE-2018-0500`. This will direct you to Mitre's site for CVEs.
 
     ![](img/mitre.jpg)
 
     Now that we know what is in the image. We should probably act upon it.
 
 ### <a name="task6.1"></a>Task 6.1: Hide Vulnerabilities
-If we find that they CVE is a false positive. Meaning that it might be disputed, or from OS that you are not using. If this is the case we can simply `hide` the image. This will not remove the fact that the CVE was hidden.
+If we find that they CVE is a false positive. Meaning that it might be disputed, or from OS that you are not using. If this is the case we can simply `hide` the vulnerability. This will not remove the fact that the CVE was found.
 
-Click `hide` for the two CVEs.
+Click `hide` for the one critical CVE.
 	![](img/cve_hide.jpg)
 
-If we click back to `Images` we can now see that the image is clean.
-	![](img/cve_clean.jpg)
+If we click back to `Images` we can now see that the image does not have a critical vulnerability.
+	![](img/cve_no_critical.jpg)
 
 Once we have hidden some CVEs we might want to perform a manual promotion of the image.
 
@@ -359,7 +358,7 @@ Manual promotions are useful for those times that you need to move an image from
 2. Click `Promote`.
     Lets look at the promoted image.
 
-3. Navigate to `ci`/`dc18` --> `Images`. Notice the `PROMOTED` badge next to the TAG.
+3. Navigate to `ci`/`dc18` --> `Images`. The `promoted` TAG should exist.
 
       ![](img/promoted.jpg)
 
@@ -380,10 +379,9 @@ This not only allows you to mirror images but also allows you to create image pr
 3. Click `Connect` and scroll down.
 4. Next create a `tag name` Trigger that is equal to `promoted`
 5. Leave the `%n` tag renaming the same.
-6. Click `Connect`.
-7. Click `Save & Apply`.
+6. Click `Save & Apply`.
 
-      ![](img/mirror2.jpg)
+	 ![](img/mirror2.jpg)
 
 
 Since we already had an image that had the tag `promoted` we should see that the image was pushed to [hub.docker.com](https://hub.docker.com). In fact we can click on the [hub](https://hub.docker.com) repository name to see if the image push was successful.
@@ -400,47 +398,110 @@ Let's sign our first Docker image?
 1. Right now you should have a promoted image `$DTR_URL/ci/dc18:promoted`. We need to tag it with a new `signed` tag.
 
    ```
+	 docker pull $DTR_URL/ci/dc18:promoted
    docker tag $DTR_URL/ci/dc18:promoted $DTR_URL/ci/dc18:signed
    ```
 
-2. Now lets enable DCT.
+2. Now lets use the Trust command... It will ask you for a BUNCH of passwords. Do yourself a favor in this workshop and use `admin1234`. :D
 
     ```
-    export DOCKER_CONTENT_TRUST=1
-    ```
-
-3. And push... It will ask you for a BUNCH of passwords. Do yourself a favor in this workshop and use `admin1234`. :D
-
-    ```
-    docker push $DTR_URL/ci/dc18:signed
+    docker trust sign $DTR_URL/ci/dc18:signed
     ```
 
     Here is an example output:
 
 	```
-	[worker3] (local) root@10.20.0.32 ~/dc18_supply_chain
-	$ docker push $DTR_URL/ci/dc18:signed
-	The push refers to a repository [ip172-18-0-24-bcd8s0ddffhg00b2o320.direct.ee-beta2.play-with-docker.com/ci/dc18]
-	cd7100a72410: Mounted from ci/dc18
-	signed: digest: sha256:8c03bb07a531c53ad7d0f6e7041b64d81f99c6e493cb39abba56d956b40eacbc size: 528
-	Signing and pushing trust metadata
+	[worker3] (local) root@10.20.0.42 ~
+	$ docker trust sign $DTR_URL/ci/dc18:signed
 	You are about to create a new root signing key passphrase. This passphrase
 	will be used to protect the most sensitive key in your signing system. Please
 	choose a long, complex passphrase and be careful to keep the password and the
 	key file itself secure and backed up. It is highly recommended that you use a
 	password manager to generate the passphrase and keep it safe. There will be no
 	way to recover this key. You can find the key in your config directory.
-	Enter passphrase for new root key with ID baf4f85:
-	Repeat passphrase for new root key with ID baf4f85:
-	Enter passphrase for new repository key with ID 8688152 (ip172-18-0-24-bcd8s0ddffhg00b2o320.direct.ee-beta2.play-with-docker.com/ci/dc18):
-	Repeat passphrase for new repository key with ID 8688152 (ip172-18-0-24-bcd8s0ddffhg00b2o320.direct.ee-beta2.play-with-docker.com/ci/dc18):
-	Finished initializing "ip172-18-0-24-bcd8s0ddffhg00b2o320.direct.ee-beta2.play-with-docker.com/ci/dc18"
-	Successfully signed "ip172-18-0-24-bcd8s0ddffhg00b2o320.direct.ee-beta2.play-with-docker.com/ci/dc18":signed
+	Enter passphrase for new root key with ID b975982:
+	Repeat passphrase for new root key with ID b975982:
+	Enter passphrase for new repository key with ID 61a14ae:
+	Repeat passphrase for new repository key with ID 61a14ae:
+	Enter passphrase for new jenkins key with ID ab5049d:
+	Repeat passphrase for new jenkins key with ID ab5049d:
+	Created signer: jenkins
+	Finished initializing signed repository for ip172-18-0-5-bfu00sinjdg00099igu0.direct.ee-beta2.play-with-docker.com/ci/dc18:signed
+	Signing and pushing trust data for local image ip172-18-0-5-bfu00sinjdg00099igu0.direct.ee-beta2.play-with-docker.com/ci/dc18:signed, may overwrite remote trust data
+	The push refers to repository [ip172-18-0-5-bfu00sinjdg00099igu0.direct.ee-beta2.play-with-docker.com/ci/dc18]
+	af9af2170d23: Layer already exists
+	cd9a82baa926: Layer already exists
+	c60ea83f6a45: Layer already exists
+	cd7100a72410: Layer already exists
+	signed: digest: sha256:5554013b565fc0ccf080f7cf4ad096ffb1dbc4f83496a86f9efa1252f26ed455 size: 1156
+	Signing and pushing trust metadata
+	Enter passphrase for jenkins key with ID ab5049d:
+	Successfully signed ip172-18-0-5-bfu00sinjdg00099igu0.direct.ee-beta2.play-with-docker.com/ci/dc18:signed
+	[worker3] (local) root@10.20.0.42 ~
 	```
 
-Again please use the same password. It will simplify this part of the workshop.
+	Again please use the same password. It will simplify this part of the workshop.
 
+3. And we can confirm the signature has been applied by inspecting the image:
 
+	```
+	docker trust inspect
+	```
+
+	Here is the example output:
+
+	```
+	[worker3] (local) root@10.20.0.42 ~
+	$ docker trust inspect $DTR_URL/ci/dc18:signed
+	[
+    {
+        "Name": "ip172-18-0-5-bfu00sinjdg00099igu0.direct.ee-beta2.play-with-docker.com/ci/dc18:signed",
+        "SignedTags": [
+            {
+                "SignedTag": "signed",
+                "Digest": "5554013b565fc0ccf080f7cf4ad096ffb1dbc4f83496a86f9efa1252f26ed455",
+                "Signers": [
+                    "jenkins"
+                ]
+            }
+        ],
+        "Signers": [
+            {
+                "Name": "jenkins",
+                "Keys": [
+                    {
+                        "ID": "ab5049def46b1b8070891981afe6091f95bf9017cdfc447866917f342810a302"
+                    }
+                ]
+            }
+        ],
+        "AdministrativeKeys": [
+            {
+                "Name": "Root",
+                "Keys": [
+                    {
+                        "ID": "59eaa1440dfc9fbf709a9640e8b8fbcb636b019f6f70aa90451f361bbd1ecf58"
+                    }
+                ]
+            },
+            {
+                "Name": "Repository",
+                "Keys": [
+                    {
+                        "ID": "61a14ae35425dde74dc5d18b292c613f613b357051862c18ca5d0a02a2f0d04e"
+                    }
+                ]
+            }
+        ]
+    }
+	]
+	[worker3] (local) root@10.20.0.42 ~
+	```
+
+4. Back in DTR, Navigate to `Repositories` --> `ci`/`dc18` --> `Tags` and you will now see the new `signed` tag with the text `Signed`
+	under the `Signed` column:
+
+	![](img/promoted_signed.jpg)
 
 ## <a name="task9"></a>Task 9: Automate with Jenkins
 In order to automate we need to deploy Jenkins. If you want I can point you to a few Docker Compose yamls. OR we have the easy way. The easy, aka script, deploys Jenkins quickly.
