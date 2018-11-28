@@ -405,7 +405,7 @@ Let's sign our first Docker image?
 1. Right now you should have a promoted image `$DTR_URL/ci/dc18:promoted`. We need to tag it with a new `signed` tag.
 
    ```
-docker pull $DTR_URL/ci/dc18:promoted
+   docker pull $DTR_URL/ci/dc18:promoted
    docker tag $DTR_URL/ci/dc18:promoted $DTR_URL/ci/dc18:signed
    ```
 
