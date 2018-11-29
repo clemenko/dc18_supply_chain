@@ -604,7 +604,7 @@ Now that we have Jenkins setup and running we need to add 3 additional plugins -
 
 	docker push $DTR_URL/ci/dc18_build:jenkins_$BUILD_NUMBER
 
-	docker rmi clemenko/dc18:0.1 clemenko/dc18:0.2 $DTR_URL/ci/dc18_build:jenkins_$BUILD_NUMBER
+	docker rmi clemenko/dc18:0.2 $DTR_URL/ci/dc18_build:jenkins_$BUILD_NUMBER
 	```
 
 	It will look very similar to:
