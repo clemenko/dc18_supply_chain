@@ -322,7 +322,7 @@ Lets take a good look at the scan results from the images. Please keep in mind t
 
 1. Navigate to DTR --> `Repostories` --> `ci/dc18_build` --> `Images`.
 
-	Do worry if you see images in a `Scanning...` or `Pending` state. Please click to another tab and click back.
+	Don't worry if you see images in a `Scanning...` or `Pending` state. Please click to another tab and click back. If this is a large image or the first time any of the layers have been scanned it can take some time.
 
     ![](img/image_list.jpg)
 
@@ -405,7 +405,7 @@ Let's sign our first Docker image?
 1. Right now you should have a promoted image `$DTR_URL/ci/dc18:promoted`. We need to tag it with a new `signed` tag.
 
    ```
-docker pull $DTR_URL/ci/dc18:promoted
+   docker pull $DTR_URL/ci/dc18:promoted
    docker tag $DTR_URL/ci/dc18:promoted $DTR_URL/ci/dc18:signed
    ```
 
