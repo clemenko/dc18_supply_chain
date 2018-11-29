@@ -288,10 +288,10 @@ In order to push and pull images to DTR we will need to take advantage of PWD's 
 5. Now we can start pulling a few images.
 
 	```
-	docker pull clemenko/dc18:0.1
-	docker pull clemenko/dc18:0.2
-	docker pull clemenko/dc18:0.3
-	docker pull alpine
+	docker image pull clemenko/dc18:0.1
+	docker image pull clemenko/dc18:0.2
+	docker image pull clemenko/dc18:0.3
+	docker image pull alpine
 
 	```
 
@@ -300,20 +300,20 @@ In order to push and pull images to DTR we will need to take advantage of PWD's 
 6. Now let's tag the image for our DTR instance. We will use the `URL` variable we set before.
 
 	```
-	docker tag clemenko/dc18:0.1 $DTR_URL/ci/dc18_build:0.1
-	docker tag clemenko/dc18:0.2 $DTR_URL/ci/dc18_build:0.2
-	docker tag clemenko/dc18:0.3 $DTR_URL/ci/dc18_build:0.3
-	docker tag alpine $DTR_URL/ci/dc18_build:alpine
+	docker image tag clemenko/dc18:0.1 $DTR_URL/ci/dc18_build:0.1
+	docker image tag clemenko/dc18:0.2 $DTR_URL/ci/dc18_build:0.2
+	docker image tag clemenko/dc18:0.3 $DTR_URL/ci/dc18_build:0.3
+	docker image tag alpine $DTR_URL/ci/dc18_build:alpine
 
 	```
 
-7. Now we can `docker push` the images to DTR.
+7. Now we can `docker image push` the images to DTR.
 
 	```
-	docker push $DTR_URL/ci/dc18_build:0.1
-	docker push $DTR_URL/ci/dc18_build:0.2
-	docker push $DTR_URL/ci/dc18_build:0.3
-	docker push $DTR_URL/ci/dc18_build:alpine
+	docker image push $DTR_URL/ci/dc18_build:0.1
+	docker image push $DTR_URL/ci/dc18_build:0.2
+	docker image push $DTR_URL/ci/dc18_build:0.3
+	docker image push $DTR_URL/ci/dc18_build:alpine
 
 	```
 
@@ -405,8 +405,8 @@ Let's sign our first Docker image?
 1. Right now you should have a promoted image `$DTR_URL/ci/dc18:promoted`. We need to tag it with a new `signed` tag.
 
    ```
-   docker pull $DTR_URL/ci/dc18:promoted
-   docker tag $DTR_URL/ci/dc18:promoted $DTR_URL/ci/dc18:signed
+   docker image pull $DTR_URL/ci/dc18:promoted
+   docker image tag $DTR_URL/ci/dc18:promoted $DTR_URL/ci/dc18:signed
    ```
 
 2. Now lets use the Trust command... It will ask you for a BUNCH of passwords. Do yourself a favor in this workshop and use `admin1234`. :D
@@ -530,10 +530,10 @@ In order to automate we need to deploy Jenkins. If you want I can point you to a
 
 2.  Then run unset Docker Content Trust and instal Jenkins.
 
-	```
-  export DOCKER_CONTENT_TRUST=0
-	./dc18_supply_chain/scripts/jenkins.sh
-	```
+    ```
+    export DOCKER_CONTENT_TRUST=0
+    ./dc18_supply_chain/scripts/jenkins.sh
+    ```
 
 3.  Pay attention to the url AND Jenkins password. It will look like :
 
@@ -598,11 +598,11 @@ Now that we have Jenkins setup and running we need to add 3 additional plugins -
 
 	docker login -u admin -p admin1234 $DTR_URL
 
-	docker pull clemenko/dc18:0.2
+	docker image pull clemenko/dc18:0.2
 
-	docker tag clemenko/dc18:0.2 $DTR_URL/ci/dc18_build:jenkins_$BUILD_NUMBER
+	docker image tag clemenko/dc18:0.2 $DTR_URL/ci/dc18_build:jenkins_$BUILD_NUMBER
 
-	docker push $DTR_URL/ci/dc18_build:jenkins_$BUILD_NUMBER
+	docker image push $DTR_URL/ci/dc18_build:jenkins_$BUILD_NUMBER
 
 	docker rmi clemenko/dc18:0.2 $DTR_URL/ci/dc18_build:jenkins_$BUILD_NUMBER
 	```
@@ -717,8 +717,8 @@ As we are now looking to sign images from our Jenkins instance we need access to
 	        stage ('Tag image') {
 	            steps {
 	                sh """
-	                    docker pull alpine
-	                    docker tag alpine ${DTR_DOMAIN}/ci/dc18_build:alpine_jenkins_${env.BUILD_NUMBER}
+	                    docker image pull alpine
+	                    docker image tag alpine ${DTR_DOMAIN}/ci/dc18_build:alpine_jenkins_${env.BUILD_NUMBER}
 	                    docker images
 	                """
 	            }
