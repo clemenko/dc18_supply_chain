@@ -288,10 +288,10 @@ In order to push and pull images to DTR we will need to take advantage of PWD's 
 5. Now we can start pulling a few images.
 
 	```
-	docker pull clemenko/dc18:0.1
-	docker pull clemenko/dc18:0.2
-	docker pull clemenko/dc18:0.3
-	docker pull alpine
+	docker image pull clemenko/dc18:0.1
+	docker image pull clemenko/dc18:0.2
+	docker image pull clemenko/dc18:0.3
+	docker image pull alpine
 
 	```
 
@@ -300,20 +300,20 @@ In order to push and pull images to DTR we will need to take advantage of PWD's 
 6. Now let's tag the image for our DTR instance. We will use the `URL` variable we set before.
 
 	```
-	docker tag clemenko/dc18:0.1 $DTR_URL/ci/dc18_build:0.1
-	docker tag clemenko/dc18:0.2 $DTR_URL/ci/dc18_build:0.2
-	docker tag clemenko/dc18:0.3 $DTR_URL/ci/dc18_build:0.3
-	docker tag alpine $DTR_URL/ci/dc18_build:alpine
+	docker image tag clemenko/dc18:0.1 $DTR_URL/ci/dc18_build:0.1
+	docker image tag clemenko/dc18:0.2 $DTR_URL/ci/dc18_build:0.2
+	docker image tag clemenko/dc18:0.3 $DTR_URL/ci/dc18_build:0.3
+	docker image tag alpine $DTR_URL/ci/dc18_build:alpine
 
 	```
 
-7. Now we can `docker push` the images to DTR.
+7. Now we can `docker image push` the images to DTR.
 
 	```
-	docker push $DTR_URL/ci/dc18_build:0.1
-	docker push $DTR_URL/ci/dc18_build:0.2
-	docker push $DTR_URL/ci/dc18_build:0.3
-	docker push $DTR_URL/ci/dc18_build:alpine
+	docker image push $DTR_URL/ci/dc18_build:0.1
+	docker image push $DTR_URL/ci/dc18_build:0.2
+	docker image push $DTR_URL/ci/dc18_build:0.3
+	docker image push $DTR_URL/ci/dc18_build:alpine
 
 	```
 
@@ -322,7 +322,7 @@ Lets take a good look at the scan results from the images. Please keep in mind t
 
 1. Navigate to DTR --> `Repostories` --> `ci/dc18_build` --> `Images`.
 
-	Do worry if you see images in a `Scanning...` or `Pending` state. Please click to another tab and click back.
+	Don't worry if you see images in a `Scanning...` or `Pending` state. Please click to another tab and click back. If this is a large image or the first time any of the layers have been scanned it can take some time.
 
     ![](img/image_list.jpg)
 
@@ -405,8 +405,8 @@ Let's sign our first Docker image?
 1. Right now you should have a promoted image `$DTR_URL/ci/dc18:promoted`. We need to tag it with a new `signed` tag.
 
    ```
-   docker pull $DTR_URL/ci/dc18:promoted
-   docker tag $DTR_URL/ci/dc18:promoted $DTR_URL/ci/dc18:signed
+   docker image pull $DTR_URL/ci/dc18:promoted
+   docker image tag $DTR_URL/ci/dc18:promoted $DTR_URL/ci/dc18:signed
    ```
 
 2. Now lets use the Trust command... It will ask you for a BUNCH of passwords. Do yourself a favor in this workshop and use `admin1234`. :D
@@ -530,10 +530,10 @@ In order to automate we need to deploy Jenkins. If you want I can point you to a
 
 2.  Then run unset Docker Content Trust and instal Jenkins.
 
-	```
-  export DOCKER_CONTENT_TRUST=0
-	./dc18_supply_chain/scripts/jenkins.sh
-	```
+    ```
+    export DOCKER_CONTENT_TRUST=0
+    ./dc18_supply_chain/scripts/jenkins.sh
+    ```
 
 3.  Pay attention to the url AND Jenkins password. It will look like :
 
@@ -598,13 +598,13 @@ Now that we have Jenkins setup and running we need to add 3 additional plugins -
 
 	docker login -u admin -p admin1234 $DTR_URL
 
-	docker pull clemenko/dc18:0.2
+	docker image pull clemenko/dc18:0.2
 
-	docker tag clemenko/dc18:0.2 $DTR_URL/ci/dc18_build:jenkins_$BUILD_NUMBER
+	docker image tag clemenko/dc18:0.2 $DTR_URL/ci/dc18_build:jenkins_$BUILD_NUMBER
 
-	docker push $DTR_URL/ci/dc18_build:jenkins_$BUILD_NUMBER
+	docker image push $DTR_URL/ci/dc18_build:jenkins_$BUILD_NUMBER
 
-	docker rmi clemenko/dc18:0.1 clemenko/dc18:0.2 $DTR_URL/ci/dc18_build:jenkins_$BUILD_NUMBER
+	docker rmi clemenko/dc18:0.2 $DTR_URL/ci/dc18_build:jenkins_$BUILD_NUMBER
 	```
 
 	It will look very similar to:
@@ -648,6 +648,8 @@ This optional task is to implement the following Jenkins Declarative Pipelines a
  - a 2nd Jenkins pipeline job will be triggered by the webhook which will use the webhook payload data
  - pull the image
  - use the `docker trust` command to sign and push the image back into DTR
+
+**Please make sure that the Promotion Policy created in [Task 4.1: Create Promotion Policy - Private to Public](#task4.1) is still ok - you may need to amend the criteria**
 
 ### <a name="task10.1"></a>Task 10.1: Create credentials in Jenkins for Trust
 As we are now looking to sign images from our Jenkins instance we need access to the signing keys that were created when [Task 8: Docker Content Trust / Image Signing ](#task8) was performed.
@@ -717,8 +719,8 @@ As we are now looking to sign images from our Jenkins instance we need access to
 	        stage ('Tag image') {
 	            steps {
 	                sh """
-	                    docker pull alpine
-	                    docker tag alpine ${DTR_DOMAIN}/ci/dc18_build:alpine_jenkins_${env.BUILD_NUMBER}
+	                    docker image pull alpine
+	                    docker image tag alpine ${DTR_DOMAIN}/ci/dc18_build:alpine_jenkins_${env.BUILD_NUMBER}
 	                    docker images
 	                """
 	            }
@@ -780,7 +782,7 @@ As we are now looking to sign images from our Jenkins instance we need access to
 	            }
 	        }
 
-					stage('Setup Docker Config') {
+          stage('Setup Docker Config') {
 	            when {
 	                expression {
 	                    !skipRemainingStages
@@ -788,6 +790,7 @@ As we are now looking to sign images from our Jenkins instance we need access to
 	            }
 	            steps {
 	                withCredentials([[$class: 'FileBinding', credentialsId: 'dct_signing_key', variable: 'DCT_SIGNING_KEY']]) {
+                    	sh 'mkdir -p ~/.docker/trust/private/'
 	                	sh 'cp -p "$DCT_SIGNING_KEY" ~/.docker/trust/private/.'
 	                }
 	            }
@@ -880,11 +883,13 @@ Now that we have our Jeknins pipeline jobs created we need to create a webhook i
 
 3. Select `Image promoted from repository` as the `Notification to receive`
 
-4. Set the `Webhook URL` value to `<DOCS_URL>:8080/generic-webhook-trigger/invoke?token=admin1234`
+4. From `worker3` retrieve the DOCS_URL value - `echo $DOCS_URL` <-- `worker3`
 
-	**Please replace the <DOCS_URL> with your URL! `echo $DOCS_URL` <-- `worker3`**
+5. Set the `Webhook URL` value to `<DOCS_URL>:8080/generic-webhook-trigger/invoke?token=admin1234`
 
-5. Press the `Create` button
+	**Please replace <DOCS_URL> with your URL! `echo $DOCS_URL` <-- `worker3`**
+
+6. Press the `Create` button
 
 ### <a name="task10.4"></a>Task 10.4: Run the jobs!
 Now all the Jenkins and DTR setup has been done you can manually run the Jenkins job `ci_dc18_pipeline`. This will cause the alpine image to be retagged and pushed to DTR. DTR will then scan the image and if there are 0 critical vulnerabilities it will promote the image into `ci/dc18`. The webhook will then trigger and the 2nd Jenkins job `ci_dc18_pipeline_sign` will start which will retag the image and then use the `docker trust` command to sign the image and push it back into DTR.
