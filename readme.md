@@ -649,6 +649,8 @@ This optional task is to implement the following Jenkins Declarative Pipelines a
  - pull the image
  - use the `docker trust` command to sign and push the image back into DTR
 
+**Please make sure that the Promotion Policy created in [Task 4.1: Create Promotion Policy - Private to Public](#task4.1) is still ok - you may need to amend the criteria**
+
 ### <a name="task10.1"></a>Task 10.1: Create credentials in Jenkins for Trust
 As we are now looking to sign images from our Jenkins instance we need access to the signing keys that were created when [Task 8: Docker Content Trust / Image Signing ](#task8) was performed.
 
@@ -780,7 +782,7 @@ As we are now looking to sign images from our Jenkins instance we need access to
 	            }
 	        }
 
-					stage('Setup Docker Config') {
+          stage('Setup Docker Config') {
 	            when {
 	                expression {
 	                    !skipRemainingStages
@@ -788,6 +790,7 @@ As we are now looking to sign images from our Jenkins instance we need access to
 	            }
 	            steps {
 	                withCredentials([[$class: 'FileBinding', credentialsId: 'dct_signing_key', variable: 'DCT_SIGNING_KEY']]) {
+                    	sh 'mkdir -p ~/.docker/trust/private/'
 	                	sh 'cp -p "$DCT_SIGNING_KEY" ~/.docker/trust/private/.'
 	                }
 	            }
@@ -880,11 +883,13 @@ Now that we have our Jeknins pipeline jobs created we need to create a webhook i
 
 3. Select `Image promoted from repository` as the `Notification to receive`
 
-4. Set the `Webhook URL` value to `<DOCS_URL>:8080/generic-webhook-trigger/invoke?token=admin1234`
+4. From `worker3` retrieve the DOCS_URL value - `echo $DOCS_URL` <-- `worker3`
 
-	**Please replace the <DOCS_URL> with your URL! `echo $DOCS_URL` <-- `worker3`**
+5. Set the `Webhook URL` value to `<DOCS_URL>:8080/generic-webhook-trigger/invoke?token=admin1234`
 
-5. Press the `Create` button
+	**Please replace <DOCS_URL> with your URL! `echo $DOCS_URL` <-- `worker3`**
+
+6. Press the `Create` button
 
 ### <a name="task10.4"></a>Task 10.4: Run the jobs!
 Now all the Jenkins and DTR setup has been done you can manually run the Jenkins job `ci_dc18_pipeline`. This will cause the alpine image to be retagged and pushed to DTR. DTR will then scan the image and if there are 0 critical vulnerabilities it will promote the image into `ci/dc18`. The webhook will then trigger and the 2nd Jenkins job `ci_dc18_pipeline_sign` will start which will retag the image and then use the `docker trust` command to sign the image and push it back into DTR.
