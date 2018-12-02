@@ -320,9 +320,9 @@ In order to push and pull images to DTR we will need to take advantage of PWD's 
 ## <a name="task6"></a>Task 6: Review Scan Results
 Lets take a good look at the scan results from the images. Please keep in mind this will take a few minutes to complete.
 
-1. Navigate to DTR --> `Repostories` --> `ci/dc18_build` --> `Images`.
+1. Navigate to DTR --> `Repostories` --> `ci/dc18_build` --> `Tags`.
 
-	Do worry if you see images in a `Scanning...` or `Pending` state. Please click to another tab and click back.
+	Don't worry if you see images in a `Scanning...` or `Pending` state. Please click to another tab and click back.
 
     ![](img/image_list.jpg)
 
@@ -350,7 +350,7 @@ If we find that they CVE is a false positive. Meaning that it might be disputed,
 Click `hide` for the one critical CVE.
 	![](img/cve_hide.jpg)
 
-If we click back to `Images` we can now see that the image does not have a critical vulnerability.
+If we click back to `Tags` we can now see that the tag does not have a critical vulnerability.
 	![](img/cve_no_critical.jpg)
 
 Once we have hidden some CVEs we might want to perform a manual promotion of the image.
@@ -365,7 +365,7 @@ Manual promotions are useful for those times that you need to move an image from
 2. Click `Promote`.
     Lets look at the promoted image.
 
-3. Navigate to `ci`/`dc18` --> `Images`. The `promoted` TAG should exist.
+3. Navigate to `ci`/`dc18` --> `Tags`. The `promoted` TAG should exist.
 
       ![](img/promoted.jpg)
 
@@ -378,7 +378,7 @@ This not only allows you to mirror images but also allows you to create image pr
 
 1. Go to [hub.docker.com](https://hub.docker.com) and create an login and repository.
 
-2. Navigate to `Repositories` --> `ci`/`dc18` --> `MIRRORS` --> `New mirror`.
+2. Navigate to `Repositories` --> `ci`/`dc18` --> `Mirrors` --> `New mirror`.
    Change the `REGISTRY TYPE` to `Docker Hub` and fill out the relevant information like:
 
    ![](img/mirror.jpg)
@@ -531,7 +531,8 @@ In order to automate we need to deploy Jenkins. If you want I can point you to a
 2.  Then run unset Docker Content Trust and instal Jenkins.
 
 	```
-  export DOCKER_CONTENT_TRUST=0
+  	export DOCKER_CONTENT_TRUST=0
+	  
 	./dc18_supply_chain/scripts/jenkins.sh
 	```
 
@@ -573,7 +574,7 @@ In order to automate we need to deploy Jenkins. If you want I can point you to a
 
 
 ### <a name="task9.2"></a>Task 9.2: Plumb Jenkins
-Now that we have Jenkins setup and running we need to add 3 additional plugins - Blue Ocean, Generic Webhook Trigger and Piepline:
+Now that we have Jenkins setup and running we need to add 3 additional plugins - Blue Ocean, Generic Webhook Trigger and Pipeline:
 
 1. Click on `Manage Jenkins` --> `Manage Plugins` --> `Available` and filter/search for `Blue Ocean`, `Generic Webhook Trigger` and `Pipeline`. When you have found each one check the checkbox to the left of the plugin name to select for installation.
 
