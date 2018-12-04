@@ -89,6 +89,8 @@ This workshop is designed to demonstrate the power of Docker Secrets, Image Prom
 ## <a name="task 1"></a>Task 1: Accessing PWD
 1. Navigate in your web browser to the URL the workshop organizer provided to you.
 
+  **PLEASE USE: <a name=https://dockr.ly/dceu-workshop></a>https://dockr.ly/dceu-workshop**
+
 2. Fill out the form, and click `submit`. You will then be redirected to the PWD environment.
 
 	It may take a minute or so to provision out your PWD environment.
@@ -101,7 +103,7 @@ We are going to use `worker3` for **ALL** our command line work. Click on `worke
 Now we need to setup a few variables. We need to create `DTR_URL` and `DTR_USERNAME`. But the easiest way is to clone the Workshop Repo and run script.
 
 ```
-git clone https://github.com/clemenko/dc18_supply_chain.git
+git clone https://github.com/stevejr/dc18_supply_chain.git
 ```
 
 Once cloned, now we can run the `var_setup.sh` script.
