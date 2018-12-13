@@ -531,7 +531,7 @@ In order to automate we need to deploy Jenkins. If you want I can point you to a
 2.  Then run unset Docker Content Trust and instal Jenkins.
 
 	```
-  export DOCKER_CONTENT_TRUST=0
+    export DOCKER_CONTENT_TRUST=0
 	./dc18_supply_chain/scripts/jenkins.sh
 	```
 
