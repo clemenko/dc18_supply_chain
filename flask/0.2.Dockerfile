@@ -1,5 +1,5 @@
 FROM alpine
-LABEL maintainer="clemenko@docker.com", \
+LABEL maintainer="clemenko@gmail.com", \
       python="3", \
       org.label-schema.vcs-url="https://github.com/clemenko/dc18_supply_chain", \
       org.label-schema.docker.cmd="docker run -d -p 5000:5000 clemenko/dc18", \
